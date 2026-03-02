@@ -25,7 +25,10 @@ export function Providers({ children }: { children: ReactNode }) {
 
                     const currentPath = window.location.pathname;
                     const isOnAuthPage = currentPath.startsWith("/auth/")
-                    const isOnDashboard = currentPath.startsWith("/dashboard");
+                    const protectedPrefixes = ["/dashboard", "/account", "/organization"];
+                    const isOnProtectedRoute = protectedPrefixes.some((prefix) =>
+                        currentPath.startsWith(prefix),
+                    );
 
                     if (session.data?.user) {
                         // Only redirect if we're on an auth page
@@ -34,7 +37,7 @@ export function Providers({ children }: { children: ReactNode }) {
                         }
                     } else {
                         // If the user signs out while on a protected route, send them back to auth
-                        if (isOnDashboard) {
+                        if (isOnProtectedRoute) {
                             router.replace("/auth/sign-up");
                         }
                     }
