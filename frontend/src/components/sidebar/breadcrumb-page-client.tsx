@@ -16,6 +16,8 @@ export default function BreadcrumbPageClient() {
         return "Projects";
       case "/dashboard/settings":
         return "Settings";
+      case "/dashboard/customer-portal":
+        return "Customer Portal";
       default:
         return "Dashboard";
     }

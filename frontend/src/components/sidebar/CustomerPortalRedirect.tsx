@@ -1,16 +1,30 @@
 "use client";
 
 import {Loader2} from "lucide-react";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {authClient} from "~/lib/auth-client";
 
 export default function CustomerPortalRedirect() {
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const portal = async () => {
-      await authClient.customer.portal();
+      try {
+        await authClient.customer.portal();
+      } catch (e) {
+        setError("We couldn't open the customer portal. Please try again.")
+      }
     };
     void portal();
   }, []);
+
+  if (error) {
+    return (
+        <div className='flex min-h-[400px] items-center justify-center'>
+          <p className='text-sm text-destructive'>{error}</p>
+        </div>
+    );
+  }
 
   return (
       <div className='flex min-h-[400px] items-center justify-center'>

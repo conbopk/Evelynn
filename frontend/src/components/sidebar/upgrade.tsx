@@ -3,16 +3,23 @@
 import {Button} from "~/components/ui/button";
 import {Crown, Sparkles} from "lucide-react";
 import {authClient} from "~/lib/auth-client";
+import {toast} from "sonner";
 
 export default function Upgrade() {
+
   const upgrade = async () => {
-    await authClient.checkout({
-      products: [
-        "df11209a-4324-4c81-aca9-0f58712041a3",
-        "0567ce66-f232-4e8f-a4f6-2d03eed51bd6",
-        "72a93e77-7753-438b-9075-0c01b407bd58",
-      ],
-    });
+    try {
+      await authClient.checkout({
+        products: [
+          "df11209a-4324-4c81-aca9-0f58712041a3",
+          "0567ce66-f232-4e8f-a4f6-2d03eed51bd6",
+          "72a93e77-7753-438b-9075-0c01b407bd58",
+        ],
+      });
+    } catch (e) {
+      console.error("Checkout failed:", e);
+      toast.error("Checkout failed")
+    }
   };
 
   return (
