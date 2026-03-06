@@ -61,6 +61,8 @@ class ZImageServer:
             token=self.token,
         ).to("cuda")
 
+        VOL.commit()
+
         assert self.pipe is not None, "Pipeline failed to load!"
         print(f"[load] Pipeline ready: {MODEL_ID}")
 
