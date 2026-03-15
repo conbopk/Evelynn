@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <SidebarTrigger className='hover:bg-muted -ml-1 h-8 w-8 transition-colors'/>
                 <Separator
                     orientation="vertical"
-                    className='mr-2 h-6 data-[orientation=vertical]:h-6 bg-primary/50'
+                    className='mr-2 h-6 data-[orientation=vertical]:h-6'
                 />
                 <Breadcrumb>
                   <BreadcrumbList>
