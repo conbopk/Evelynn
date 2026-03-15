@@ -61,22 +61,11 @@ export default function DashboardPage() {
         const images = (imageResult.imageProjects as ImageProject[]) ?? [];
         const total = imageResult.pagination?.total ?? images.length;
 
-        const now = new Date();
-
-        // Get the first Monday of the current week (0 = Sunday, 1 = Monday,...)
-        const dayOfWeek = now.getDay(); // 0 (Sun) -> 6 (Sat)
-        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday goes back 6, the rest goes back dayOfWeek - 1
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - diffToMonday);
-        startOfWeek.setHours(0, 0, 0, 0);   // reset to 00:00:00 Monday
-
-        const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
         if (!statsResult.success || !statsResult.thisMonth || !statsResult.thisWeek) {
           setUserStats({
             totalImageProjects: total,
-            thisMonth: images.filter((p) => new Date(p.createdAt) >= thisMonth).length,
-            thisWeek: images.filter((p) => new Date(p.createdAt) >= startOfWeek).length,
+            thisMonth: 0,
+            thisWeek: 0,
           });
         } else {
           setUserStats({
