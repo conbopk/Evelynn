@@ -597,7 +597,7 @@ export default function HomePage() {
               <div>
                 <h3 className='mb-4 font-semibold text-white'>Product</h3>
                 <ul className='space-y-3 text-sm'>
-                  {[["#features", "Features"], ["#pricing", "Pricing"], ["/dashboard", "Dashboard"]].map(([href, label]) => (
+                  {([["#features", "Features"], ["#pricing", "Pricing"], ["/dashboard", "Dashboard"]] as [string, string][]).map(([href, label]) => (
                       <li key={href}>
                         <Link
                             href={href}
@@ -614,10 +614,10 @@ export default function HomePage() {
               <div>
                 <h3 className='mb-4 font-semibold text-white'>Support</h3>
                 <ul className='space-y-3 text-sm'>
-                  {[
+                  {([
                     ["mailto:nguyennhuthanh0104@gmail.com", "Contact"],
                     ["/dashboard/settings", "Account Settings"],
-                  ].map(([href, label]) => (
+                  ] as [string, string][]).map(([href, label]) => (
                       <li key={href}>
                         <Link
                             href={href}
