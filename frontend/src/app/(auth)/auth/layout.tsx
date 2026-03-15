@@ -2,35 +2,90 @@ import type {ReactNode} from "react";
 import {Providers} from "~/components/providers";
 import Link from "next/link";
 import {ImageIcon, Sparkles, Target, Zap} from "lucide-react";
+import Image from "next/image";
 
 export default function AuthLayout({children}: { children: ReactNode }) {
   return (
       <Providers>
-        <div className='auth-page flex min-h-screen'>
+        <div className='auth-page flex min-h-screen' style={{ background: "#080010" }}>
           {/*Left Side - Branding*/}
-          <div className='relative hidden overflow-hidden bg-gradient-to-br from-purple-900 via-violet-900 to-indigo-900 lg:flex lg:w-1/2'>
-            <div className='bg-grid-white/[0.1] absolute inset-0 bg-[size:30px_30px]'/>
+          <div
+              className='relative hidden overflow-hidden lg:flex lg:w-1/2'
+              style={{ background: "linear-gradient(135deg, #0d0018 0%, #1a0030 50%, #120020 100%)" }}
+          >
+            <div className='pointer-events-none absolute inset-0'>
+              <div
+                  className='absolute rounded-full'
+                  style={{
+                    width: 500, height: 500,
+                    top: -150, right: -100,
+                    background: "radial-gradient(circle, rgba(204,0,170,0.2) 0%, transparent 70%)",
+                    filter: "blur(50px)",
+                  }}
+              />
+              <div
+                  className='absolute rounded-full'
+                  style={{
+                    width: 350, height: 350,
+                    bottom: -80, left: -50,
+                    background: "radial-gradient(circle, rgba(170,0,204,0.15) 0%, transparent 70%)",
+                    filter: "blur(40px)",
+                  }}
+              />
+              <div
+                  className='absolute rounded-full'
+                  style={{
+                    width: 200, height: 200,
+                    top: "45%", right: 40,
+                    background: "radial-gradient(circle, rgba(255,45,176,0.1) 0%, transparent 70%)",
+                    filter: "blur(30px)",
+                  }}
+              />
+            </div>
+
+            {/* Subtle grid overlay */}
+            <div
+                className='absolute inset-0 opacity-[0.04]'
+                style={{
+                  backgroundImage: "linear-gradient(rgba(204,0,170,1) 1px, transparent 1px), linear-gradient(90deg, rgba(204,0,170,1) 1px, transparent 1px)",
+                  backgroundSize: "30px 30px",
+                }}
+            />
+
             <div className='relative z-10 flex flex-col justify-center px-12 xl:px-16'>
               {/*Logo*/}
               <Link
                 href="/"
                 className='mb-12 flex cursor-pointer items-center gap-3'
               >
-                <div className='flex h-12 w-12 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-500/20 backdrop-blur-sm'>
-                  <Sparkles></Sparkles>
-                </div>
-                <span className='text-2xl font-bold text-violet-50'>
+                <Image
+                    src="/evelynn-favicons/favicon-ai_eye-48x48.png"
+                    alt="AI Image Generator logo"
+                    width={48}
+                    height={48}
+                    className="rounded-xl"
+                    style={{
+                      filter: "drop-shadow(0 0 12px rgba(255, 45, 176, 0.65))",
+                      border: "1px solid rgba(255, 45, 176, 0.25)",
+                    }}
+                />
+                <span
+                    className='text-2xl font-bold'
+                    style={{ background: "linear-gradient(90deg, #ff79c6, #cc44ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                >
                   AI Image Generator
                 </span>
               </Link>
 
               {/*Hero Content*/}
               <div className='max-w-md'>
-                <h1 className='mb-6 text-4xl leading-tight font-bold text-violet-50 xl:text-5xl'>
+                <h1 className='mb-6 text-4xl leading-tight font-bold text-white xl:text-5xl'>
                   Transform Text into{" "}
-                  <span>Stunning Images</span>
+                  <span style={{ background: "linear-gradient(90deg, #ff79c6, #cc44ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    Stunning Images
+                  </span>
                 </h1>
-                <p className='mb-8 text-lg leading-relaxed text-violet-100/90'>
+                <p className='mb-8 text-lg leading-relaxed' style={{ color: "rgba(212, 168, 255, 0.85)" }}>
                   Join thousands of creators using advanced AI to generate beautiful images in seconds.
                 </p>
 
@@ -40,24 +95,27 @@ export default function AuthLayout({children}: { children: ReactNode }) {
                     {
                       icon: ImageIcon,
                       text: "Text-to-Image Generation",
-                      color: "bg-emerald-500/20 border-emerald-400/30 text-emerald-300",
+                      style: { background: "rgba(255, 45, 176, 0.12)", border: "1px solid rgba(255, 45, 176, 0.25)", color: "#ff79c6" },
                     },
                     {
                       icon: Zap,
                       text: "Lightning Fast Processing",
-                      color: "bg-amber-500/20 border-amber-400/30 text-amber-300",
+                      style: { background: "rgba(204, 68, 255, 0.12)", border: "1px solid rgba(204, 68, 255, 0.25)", color: "#cc44ff" },
                     },
                     {
                       icon: Target,
                       text: "High-Quality Outputs",
-                      color: "bg-pink-500/20 border-pink-400/30 text-pink-300",
+                      style: { background: "rgba(232, 0, 158, 0.12)", border: "1px solid rgba(232, 0, 158, 0.25)", color: "#e8009e" },
                     },
                   ].map((feature, index) => (
                       <div key={index} className='flex items-center gap-3'>
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg border backdrop-blur-sm ${feature.color}`}>
+                        <div
+                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border backdrop-blur-sm"
+                            style={feature.style}
+                        >
                           <feature.icon className='h-5 w-5'/>
                         </div>
-                        <span className='font-medium text-violet-100'>
+                        <span className='font-medium' style={{ color: "rgba(212, 168, 255, 0.9)" }}>
                           {feature.text}
                         </span>
                       </div>
@@ -67,35 +125,42 @@ export default function AuthLayout({children}: { children: ReactNode }) {
 
               {/*Bottom Stats*/}
               <div className='mt-16 grid grid-cols-3 gap-8'>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-violet-200'>10K+</div>
-                  <div className='text-sm text-violet-300/70'>
-                    Images Generated
-                  </div>
-                </div>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-violet-200'>2.5K+</div>
-                  <div className='text-sm text-violet-300/70'>
-                    Happy Users
-                  </div>
-                </div>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-amber-200'>4.8★</div>
-                  <div className='text-sm text-violet-300/70'>
-                    Rating
-                  </div>
-                </div>
+                {[
+                  { value: "10K+", label: "Images Generated", accent: false },
+                  { value: "2.5K+", label: "Happy Users",      accent: false },
+                  { value: "4.8★",  label: "Rating",           accent: true  },
+                ].map((s) => (
+                    <div key={s.label} className='text-center'>
+                      <div
+                          className='text-2xl font-bold'
+                          style={{ color: s.accent ? "#ff79c6" : "rgba(212, 168, 255, 0.95)" }}
+                      >
+                        {s.value}
+                      </div>
+                      <div className='text-sm' style={{ color: "rgba(153, 102, 204, 0.7)" }}>
+                        {s.label}
+                      </div>
+                    </div>
+                ))}
               </div>
             </div>
-
-            {/*Decorative Elements*/}
-            <div className='absolute top-20 right-20 h-32 w-32 rounded-full bg-violet-400/20 blur-3xl'/>
-            <div className='absolute right-32 bottom-20 h-24 w-24 rounded-full bg-pink-400/15 blur-2xl'/>
-            <div className='absolute top-1/2 right-10 h-16 w-16 rounded-full bg-indigo-400/20 blur-xl'/>
           </div>
 
           {/*Right Side - Auth Form*/}
-          <div className='flex flex-1 flex-col justify-center bg-gradient-to-br from-slate-500 to-violet-300 px-6 py-12 lg:px-8'>
+          <div
+              className='flex flex-1 flex-col justify-center px-6 py-12 lg:px-8'
+              style={{ background: "linear-gradient(160deg, #0d0018 0%, #080010 100%)" }}
+          >
+            {/* subtle border separator on desktop */}
+            <div
+                className='pointer-events-none absolute inset-y-0 hidden lg:block'
+                style={{
+                  left: "50%",
+                  width: 1,
+                  background: "linear-gradient(to bottom, transparent, rgba(204,0,170,0.3) 30%, rgba(204,0,170,0.3) 70%, transparent)",
+                }}
+            />
+
             <div className='sm:mx-auto sm:w-full sm:max-w-md'>
               {/*Mobile Logo*/}
               <div className='mb-8 text-center lg:hidden'>
@@ -103,10 +168,18 @@ export default function AuthLayout({children}: { children: ReactNode }) {
                   href='/'
                   className='inline-flex cursor-pointer items-center gap-2'
                 >
-                  <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 shadow-lg'>
-                    <Sparkles className='h-6 w-6 text-white'/>
-                  </div>
-                  <span className='bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent'>
+                  <Image
+                      src="/evelynn-favicons/favicon-ai_eye-32x32.png"
+                      alt="AI Image Generator logo"
+                      width={40}
+                      height={40}
+                      className="rounded-lg"
+                      style={{ filter: "drop-shadow(0 0 8px rgba(255, 45, 176, 0.6))" }}
+                  />
+                  <span
+                      className='text-xl font-bold'
+                      style={{ background: "linear-gradient(90deg, #ff79c6, #cc44ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                  >
                     AI Image Generator
                   </span>
                 </Link>
@@ -116,11 +189,12 @@ export default function AuthLayout({children}: { children: ReactNode }) {
               <div>{children}</div>
 
               {/*Footer Link*/}
-              <p className='mt-6 text-center text-sm text-slate-600'>
+              <p className='mt-6 text-center text-sm'  style={{ color: "rgba(153, 102, 204, 0.75)" }}>
                 Back to{" "}
                 <Link
                   href="/"
-                  className='cursor-pointer font-medium text-violet-600 transition-colors hover:text-violet-500'
+                  className='font-medium transition-colors hover:text-[#ff79c6]'
+                  style={{ color: "#cc44ff" }}
                 >
                   homepage
                 </Link>

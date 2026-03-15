@@ -108,7 +108,6 @@ class ZImageServer:
 
         return {
             "image_s3_key": key,
-            "image_url": url,
             "seed": seed,
             "model_id": MODEL_ID
         }
@@ -171,4 +170,3 @@ def main(
     print(f"Done!")
     print(f"    seed    : {result['seed']}")
     print(f"    s3 key  : {result['image_s3_key']}")
-    print(f"    url     : {result['image_url']}")

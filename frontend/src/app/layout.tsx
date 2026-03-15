@@ -8,7 +8,7 @@ import {TooltipProvider} from "~/components/ui/tooltip";
 export const metadata: Metadata = {
   title: "Evelynn",
   description: "AI Image generator",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/evelynn-favicons/favicon-ai_eye-32x32.png" }],
 };
 
 const geist = Geist({
