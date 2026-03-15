@@ -220,7 +220,7 @@ export default function ProjectsPage() {
                     onValueChange={(value) => setSortBy(value as SortBy)}
                   >
                     <SelectTrigger className='w-[180px]'>
-                      <SelectValue placeholder='Sorrt by'/>
+                      <SelectValue placeholder='Sort by'/>
                     </SelectTrigger>
 
                     <SelectContent className='rounded-xl border bg-background/80 backdrop-blur-md shadow-xl animate-in fade-in zoom-in-95'>

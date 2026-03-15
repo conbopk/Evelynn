@@ -193,6 +193,45 @@ export const getUserImageProjects = cache(async (page = 1) => {
 });
 
 
+export async function getUserImageStats() {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+    const now = new Date();
+
+    // Get the first Monday of the current week (0 = Sunday, 1 = Monday,...)
+    const dayOfWeek = now.getDay(); // 0 (Sun) -> 6 (Sat)
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday goes back 6, the rest goes back dayOfWeek - 1
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - diffToMonday);
+    startOfWeek.setHours(0, 0, 0, 0);   // reset to 00:00:00 Monday
+
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [thisWeek, thisMonth] = await db.$transaction([
+        db.imageProject.count({
+          where: {
+            userId: session.user.id,
+            createdAt: { gte: startOfWeek },
+          },
+        }),
+        db.imageProject.count({
+          where: {
+            userId: session.user.id,
+            createdAt: { gte: startOfMonth },
+          },
+        }),
+    ]);
+
+    return { success: true, thisWeek, thisMonth}
+  } catch (e) {
+    console.error("Error fetching image stats:", e);
+    return { success: false, error: "Failed to fetch stats" }
+  }
+}
+
+
 export async function deleteImageProject(id: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });

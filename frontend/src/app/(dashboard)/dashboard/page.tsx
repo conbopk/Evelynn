@@ -5,7 +5,7 @@ import {RedirectToSignIn, SignedIn} from "@daveyplate/better-auth-ui";
 import {useEffect, useState} from "react";
 import type {ImageProject} from "~/app/(dashboard)/dashboard/projects/page";
 import {authClient} from "~/lib/auth-client";
-import {getUserImageProjects} from "~/actions/text-to-image";
+import {getUserImageProjects, getUserImageStats} from "~/actions/text-to-image";
 import {ArrowRight, Calendar, Expand, FolderOpen, ImageIcon, Loader2, Settings, Sparkles, Star, TrendingUp} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -41,9 +41,10 @@ export default function DashboardPage() {
     const InitializeDashboard = async () => {
       try {
         // Run session and image projects fetch in parallel
-        const [sessionResult, imageResult] = await Promise.all([
+        const [sessionResult, imageResult, statsResult] = await Promise.all([
             authClient.getSession(),
             getUserImageProjects(),
+            getUserImageStats(),
         ])
 
         // Set user from session
@@ -58,9 +59,9 @@ export default function DashboardPage() {
 
         // Calculate stats
         const images = (imageResult.imageProjects as ImageProject[]) ?? [];
+        const total = imageResult.pagination?.total ?? images.length;
 
         const now = new Date();
-        const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
         // Get the first Monday of the current week (0 = Sunday, 1 = Monday,...)
         const dayOfWeek = now.getDay(); // 0 (Sun) -> 6 (Sat)
@@ -69,11 +70,21 @@ export default function DashboardPage() {
         startOfWeek.setDate(now.getDate() - diffToMonday);
         startOfWeek.setHours(0, 0, 0, 0);   // reset to 00:00:00 Monday
 
-        setUserStats({
-          totalImageProjects: images.length,
-          thisMonth: images.filter((p) => new Date(p.createdAt) >= thisMonth).length,
-          thisWeek: images.filter((p) => new Date(p.createdAt) >= startOfWeek).length,
-        });
+        const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        if (!statsResult.success || !statsResult.thisMonth || !statsResult.thisWeek) {
+          setUserStats({
+            totalImageProjects: total,
+            thisMonth: images.filter((p) => new Date(p.createdAt) >= thisMonth).length,
+            thisWeek: images.filter((p) => new Date(p.createdAt) >= startOfWeek).length,
+          });
+        } else {
+          setUserStats({
+            totalImageProjects: total,
+            thisMonth: statsResult.thisMonth,
+            thisWeek: statsResult.thisWeek,
+          });
+        }
       } catch (e) {
         console.error("Dashboard initialization failed:", e);
       } finally {
