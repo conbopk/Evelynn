@@ -61,7 +61,7 @@ export default function DashboardPage() {
         const images = (imageResult.imageProjects as ImageProject[]) ?? [];
         const total = imageResult.pagination?.total ?? images.length;
 
-        if (!statsResult.success || !statsResult.thisMonth || !statsResult.thisWeek) {
+        if (!statsResult.success || statsResult.thisMonth === undefined || statsResult.thisWeek === undefined) {
           setUserStats({
             totalImageProjects: total,
             thisMonth: 0,
