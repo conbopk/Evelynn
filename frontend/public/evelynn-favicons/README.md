@@ -2,6 +2,7 @@
 ## AI Image Generation App
 
 ### Variants
+
 | Prefix    | Inspiration          | Best use                          |
 |-----------|----------------------|-----------------------------------|
 | heart     | W - Allure (heart)   | Primary; cleanest at 16px         |

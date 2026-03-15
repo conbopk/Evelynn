@@ -78,7 +78,7 @@ export async function getDownloadUrl(
     const command = new GetObjectCommand({
       Bucket: env.AWS_S3_BUCKET_NAME,
       Key: s3Key,
-      ResponseContentDisposition: `attachment; filename:"${filename}"`,
+      ResponseContentDisposition: `attachment; filename="${filename}"`,
       ResponseContentType: "image/png",
     });
 

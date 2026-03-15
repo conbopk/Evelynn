@@ -209,7 +209,7 @@ export default function HomePage() {
                 <Button
                     variant='outline'
                     size='lg'
-                    className='ccursor-pointer gap-2 px-8 py-6 text-base font-semibold'
+                    className='cursor-pointer gap-2 px-8 py-6 text-base font-semibold'
                     style={{
                       border: "1px solid rgba(204, 68, 255, 0.4)",
                       color: "#d4a8ff",

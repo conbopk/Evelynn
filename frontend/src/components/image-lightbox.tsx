@@ -53,6 +53,9 @@ export function ImageLightbox({ image, onClose }: ImageLightboxProps) {
   return (
       // Backdrop - click outside to close
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Image preview"
         className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm'
         onClick={onClose}
       >
@@ -63,6 +66,7 @@ export function ImageLightbox({ image, onClose }: ImageLightboxProps) {
         >
           {/*Close button*/}
           <Button
+              aria-label='Close image preview'
               variant='ghost'
               size='sm'
               className='absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-black/40 text-white hover:bg-black/60 hover:text-white rounded-full'

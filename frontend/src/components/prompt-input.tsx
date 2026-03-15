@@ -29,7 +29,7 @@ export default function PromptInput({
         <CardContent className='p-2 sm:p-3'>
           <div className='mb-2 flex items-start justify-between'>
             <div>
-              <h3 className='mb-0.5 text-sm font-bold'>Prompt</h3>
+              <h3 id="prompt-label" className='mb-0.5 text-sm font-bold'>Prompt</h3>
               <p className='text-muted-foreground text-xs'>
                 Describe the image you want to generate
               </p>
@@ -38,6 +38,8 @@ export default function PromptInput({
 
           <div className='space-y-3'>
             <textarea
+                id='prompt'
+                aria-labelledby="prompt-label"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="A high quality product photo of a nano banana on a wooden table, studio lighting"
@@ -45,7 +47,11 @@ export default function PromptInput({
                 rows={9}
                 className='border border-input bg-background w-full rounded-md px-3 py-2 text-sm resize-none overflow-y-auto focus:border-blue-400 focus:ring-2 focus:ring-blue-400'
             />
+            <label htmlFor="negative-prompt" className="sr-only">
+              Negative prompt
+            </label>
             <input
+                id='negative-prompt'
                 value={negativePrompt}
                 onChange={(e) => setNegativePrompt(e.target.value)}
                 placeholder="Negative prompt (optional)"

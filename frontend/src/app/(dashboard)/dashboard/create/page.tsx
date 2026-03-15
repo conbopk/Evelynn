@@ -146,7 +146,7 @@ export default function CreatePage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (e) {
+    } catch {
       toast.error("Download failed");
     }
   };

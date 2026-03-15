@@ -75,7 +75,7 @@ export default function ProjectsPage() {
     };
 
     void initializeProjects();
-  }, []);
+  }, [page]);
 
   // Filter and sort projects
   useEffect(() => {
@@ -108,13 +108,17 @@ export default function ProjectsPage() {
   useEffect(() => {
     const loadPage = async () => {
       setIsLoading(true);
-      const result = await getUserImageProjects(page);
-      if (result.success && result.imageProjects) {
-        setImageProjects(result.imageProjects as ImageProject[]);
-        setFilteredProjects(result.imageProjects as ImageProject[]);
-        if (result.pagination) setPagination(result.pagination);
+      try {
+        const result = await getUserImageProjects(page);
+        if (result.success && result.imageProjects) {
+          setImageProjects(result.imageProjects as ImageProject[]);
+          if (result.pagination) setPagination(result.pagination);
+        }
+      } catch (e) {
+        console.error("Image projects initialization failed:", e);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     void loadPage();
@@ -136,7 +140,7 @@ export default function ProjectsPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (e) {
+    } catch {
       toast.error("Download failed");
     }
   };
@@ -306,6 +310,7 @@ export default function ProjectsPage() {
                             <Button
                                 variant="ghost"
                                 size='sm'
+                                aria-label="Open image"
                                 className='h-8 w-8 p-0'
                                 onClick={() => setLightboxImage(project)}
                             >
@@ -314,6 +319,7 @@ export default function ProjectsPage() {
                             <Button
                               variant="ghost"
                               size='sm'
+                              aria-label="Download image"
                               className='h-8 w-8 p-0'
                               onClick={(e) => handleDownload(project, e)}
                             >
@@ -322,6 +328,7 @@ export default function ProjectsPage() {
                             <Button
                                 variant="ghost"
                                 size='sm'
+                                aria-label="Delete image"
                                 className='text-destructive h-8 w-8 p-0 hover:text-destructive'
                                 onClick={(e) => handleDelete(project.id, e)}
                             >

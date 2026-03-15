@@ -10,9 +10,9 @@ import {ArrowRight, Calendar, Expand, FolderOpen, ImageIcon, Loader2, Settings, 
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import {useRouter} from "next/navigation";
-import {toast} from "sonner";
-import {getDownloadUrl} from "~/actions/download-image";
 import {ImageLightbox} from "~/components/image-lightbox";
+// import {toast} from "sonner";
+// import {getDownloadUrl} from "~/actions/download-image";
 
 
 interface UserStats {
@@ -85,23 +85,23 @@ export default function DashboardPage() {
   }, []);
 
 
-  const handleDownload = async (img: ImageProject) => {
-    try {
-      const result = await getDownloadUrl(img.s3Key);
-      if (!result.success || !result.url) {
-        toast.error(result.error ?? "Failed to get download link");
-        return;
-      }
-      const link = document.createElement("a");
-      link.href = result.url;
-      link.download = result.filename ?? "generated-image.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (e) {
-      toast.error("Download failed");
-    }
-  };
+  // const handleDownload = async (img: ImageProject) => {
+  //   try {
+  //     const result = await getDownloadUrl(img.s3Key);
+  //     if (!result.success || !result.url) {
+  //       toast.error(result.error ?? "Failed to get download link");
+  //       return;
+  //     }
+  //     const link = document.createElement("a");
+  //     link.href = result.url;
+  //     link.download = result.filename ?? "generated-image.png";
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   } catch (e) {
+  //     toast.error("Download failed");
+  //   }
+  // };
 
   if (isLoading) {
     return (

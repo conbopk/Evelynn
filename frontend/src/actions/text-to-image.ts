@@ -43,8 +43,24 @@ export async function generateImage(
 
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
-    if (!data.prompt || !data.width || !data.height)
-      return { success: false, error: "Missing required fields" };
+    if (!data.prompt.trim())
+      return { success: false, error: "Prompt cannot be empty" };
+    if (!Number.isInteger(data.width) || data.width <= 0)
+      return { success: false, error: "Width must be a positive integer" };
+    if (!Number.isInteger(data.height) || data.height <= 0)
+      return { success: false, error: "Height must be a positive integer" };
+    if (
+        data.num_inference_steps !== undefined &&
+        (!Number.isInteger(data.num_inference_steps) || data.num_inference_steps <= 0)
+    ) {
+      return { success: false, error: "num_inference_steps must be a positive integer" };
+    }
+    if (
+        data.guidance_scale !== undefined &&
+        (!Number.isFinite(data.guidance_scale) || data.guidance_scale < 0)
+    ) {
+      return { success: false, error: "guidance_scale must be a non-negative number" };
+    }
 
     const creditsNeeded = 1;
 
@@ -89,7 +105,6 @@ export async function generateImage(
 
     const result = (await response.json()) as {
       image_s3_key: string;
-      image_url: string;
       seed: number;
       model_id: string;
     };
@@ -184,7 +199,7 @@ export async function deleteImageProject(id: string) {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     const project = await db.imageProject.findUnique({ where: { id } });
-    if (!project || project.userId !== session.user.id)
+    if (project?.userId !== session.user.id)
       return { success: false, error: "Not found or unauthorized" };
 
     // Delete from S3 first

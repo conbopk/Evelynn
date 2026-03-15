@@ -2,7 +2,7 @@
 
 import {Loader2} from "lucide-react";
 import {useEffect, useState} from "react";
-import {authClient} from "~/lib/auth-client";
+import {polarCustomerPortal} from "~/lib/auth-client";
 
 export default function CustomerPortalRedirect() {
   const [error, setError] = useState<string | null>(null);
@@ -10,8 +10,8 @@ export default function CustomerPortalRedirect() {
   useEffect(() => {
     const portal = async () => {
       try {
-        await authClient.customer.portal();
-      } catch (e) {
+        await polarCustomerPortal();
+      } catch {
         setError("We couldn't open the customer portal. Please try again.")
       }
     };

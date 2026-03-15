@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 import {Providers} from "~/components/providers";
 import Link from "next/link";
-import {ImageIcon, Sparkles, Target, Zap} from "lucide-react";
+import {ImageIcon, Target, Zap} from "lucide-react";
 import Image from "next/image";
 
 export default function AuthLayout({children}: { children: ReactNode }) {
@@ -169,7 +169,7 @@ export default function AuthLayout({children}: { children: ReactNode }) {
                   className='inline-flex cursor-pointer items-center gap-2'
                 >
                   <Image
-                      src="/evelynn-favicons/favicon-ai_eye-32x32.png"
+                      src="/evelynn-favicons/favicon-ai_eye-48x48.png"
                       alt="AI Image Generator logo"
                       width={40}
                       height={40}
