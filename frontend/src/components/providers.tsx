@@ -25,7 +25,7 @@ export function Providers({children}: { children: ReactNode }) {
 
               const currentPath = window.location.pathname;
               const isOnAuthPage = currentPath.startsWith("/auth/")
-              const protectedPrefixes = ["/dashboard", "/account", "/organization"];
+              const protectedPrefixes = ["/dashboard", "/account"];
               const isOnProtectedRoute = protectedPrefixes.some((prefix) =>
                   currentPath.startsWith(prefix),
               );
