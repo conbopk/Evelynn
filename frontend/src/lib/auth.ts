@@ -10,7 +10,8 @@ const polarClient = new Polar({
   // Use 'sandbox' if you're using the Polar Sandbox environment
   // Remember that access tokens, products, etc. are completely separated between environments.
   // Access tokens obtained in Production are for instance not usable in the Sandbox environment.
-  server: env.NODE_ENV === "production" ? "production" : "sandbox",
+  // server: env.NODE_ENV === "production" ? "production" : "sandbox",
+  server: "sandbox",
 });
 
 export const auth = betterAuth({
