@@ -172,7 +172,7 @@ export default function HomePage() {
             >
               <Sparkles className='h-4 w-4'/>
               <span className='font-medium'>
-                Powered by Thanh Nguyen
+                Powered by Z-Image-Turbo & Modal
               </span>
             </div>
 
