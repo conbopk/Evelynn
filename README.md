@@ -68,7 +68,7 @@ dashboard – all ready to self-host or ship as a product.
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full ASCII system-design diagram.
 
-```
+```text
 User Browser
     │
     ▼
@@ -248,7 +248,7 @@ Secrets on the Modal platform are managed via `modal secret create` — see step
 
 ## Project Structure
 
-```
+```text
 Evelynn/
 ├── backend/
 │   └── text-to-image/
