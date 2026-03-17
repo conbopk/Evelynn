@@ -1,7 +1,34 @@
-### Example user template
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+!.env.example
 
-# IntelliJ project files
-.idea
-*.iml
-out
-gen
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Prisma
+frontend/prisma/migrations/dev.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
