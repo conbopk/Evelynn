@@ -13,7 +13,7 @@
 
 **Please do not open a public GitHub issue for security vulnerabilities.**
 
-To report a security issue, email us at **nguyennhuthanh0104@gmail.com** :
+To report a security issue, email us at **nguyennhuthanh0104@gmail.com**:
 
 1. A clear description of the vulnerability
 2. Steps to reproduce it
