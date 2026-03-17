@@ -66,7 +66,7 @@ dashboard – all ready to self-host or ship as a product.
 
 ## Architecture
 
-See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full ASCII system-design diagram.
+See [System Design Excalidraw](./docs/system-design.excalidraw) for full beauty excalidraw system-design diagram or [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full ASCII system-design diagram.
 
 ```text
 User Browser
