@@ -22,11 +22,11 @@ Be respectful and constructive. We follow the [Contributor Covenant](https://www
 
 ## Getting Started
 
-1. **Fork** the repository on Github
+1. **Fork** the repository on GitHub
 2. **Clone** your fork:
     ```bash
    git clone https://github.com/conbopk/Evelynn.git
-   cd evelynn
+   cd Evelynn
    ```
 3.  **Add upstream** remote:
     ```bash
@@ -43,7 +43,7 @@ Be respectful and constructive. We follow the [Contributor Covenant](https://www
 cd frontend
 npm install
 cp .env.example .env.local
-# Fill in the required env vars (at minimum DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL)
+# Fill in the required env vars (at minimum DATABASE_URL, BETTER_AUTH_SECRET, NEXT_PUBLIC_BETTER_AUTH_URL)
 
 npm run db:push   # apply schema to dev DB
 npm run dev       # start dev server on :3000
@@ -147,10 +147,10 @@ When filing a bug report, please include:
 4. **Environment** — OS, Node version, browser
 5. **Logs / screenshots** if applicable
 
-Use the Github issue templates for bugs and feature requests.
+Use the GitHub issue templates for bugs and feature requests.
 
 ---
 
 ## Questions?
 
-Open a [Discussion](https://github.com/conbopk/Evelynn.git/discussions) rather than an issue for general questions.
+Open a [Discussion](https://github.com/conbopk/Evelynn/discussions) rather than an issue for general questions.
