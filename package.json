@@ -1,0 +1,30 @@
+{
+  "name": "evelynn",
+  "version": "1.0.0",
+  "description": "AI Image Generator",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conbopk/Evelynn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/conbopk/Evelynn/issues"
+  },
+  "homepage": "https://github.com/conbopk/Evelynn#readme",
+  "devDependencies": {
+    "semantic-release": "^25.0.3"
+  },
+  "release": {
+    "branches": ["main"]
+  }
+}
