@@ -79,7 +79,7 @@
 
 ## Request Flow: Image Generation
 
-```
+```text
  Client                  Next.js Server              Modal              AWS S3
    │                          │                         │                  │
    │  click "Generate"        │                         │                  │
@@ -176,7 +176,7 @@
 └────────┘ └─────────┘
 ```
 
---- 
+---
 
 ## Infrastructure Map
 
