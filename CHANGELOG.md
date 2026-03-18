@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/conbopk/Evelynn/compare/v1.0.0...v1.1.0) (2026-03-18)
+
+
+### Features
+
+* hybrid roadmap + semantic changlog ([10a018a](https://github.com/conbopk/Evelynn/commit/10a018a0cd35c978c9c4bee9198eecee6490d24c))
+
 # Changelog
 
 All notable changes to Evelynn are documented here.
