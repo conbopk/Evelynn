@@ -22,7 +22,7 @@ body:
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: Describe what you'd like to see
+      description: Other approaches you've thought about
 
   - type: textarea
     id: context

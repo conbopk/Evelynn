@@ -23,6 +23,6 @@
 ## Checklist
 
 - [ ] `npm run check` passes (lint + typecheck)
-- [ ] `npm run format:write` run
+- [ ] `npm run format:write` ran
 - [ ] Self-review done
-- [ ] No secret commited
+- [ ] No secret committed

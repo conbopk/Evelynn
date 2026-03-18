@@ -23,8 +23,8 @@ body:
         1. Go to ...
         2. Click on ...
         3. See error
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: environment
@@ -35,8 +35,8 @@ body:
         - Node: 22.x
         - Browser: Chrome 123
         - Deployment: self-hosted / Vercel
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     id: logs
