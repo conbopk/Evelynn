@@ -55,6 +55,7 @@ def mock_pipeline(tmp_path):
         mock_pipe_instance.return_value.images = [_fake_image]
         mock_param.device.type = "cpu"
         mock_pipe_instance.parameters.return_value = [mock_param]
+        mock_pipe_instance.device = "cpu"  # Must be a string, not MagicMock
         mock_pipe_cls.from_pretrained.return_value = mock_pipe_instance
 
         mock_s3.return_value = "images/test-uuid.png"

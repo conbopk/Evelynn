@@ -16,6 +16,9 @@ import threading
 import uuid
 from pathlib import Path
 
+import torch
+from diffusers import ZImagePipeline  # type: ignore[import]
+
 from app.core.config import settings
 from app.models.schemas import GenerateRequest, GenerateResponse
 from app.services.storage import S3StorageService
@@ -30,7 +33,7 @@ class ImageGeneratorService:
     _lock: threading.Lock = threading.Lock()
 
     def __init__(self) -> None:
-        self._pipe = None
+        self._pipe: ZImagePipeline | None = None  # type: ignore[valid-type]
         self._loaded = False
         self._pipe_lock = threading.Lock()
 
@@ -83,7 +86,7 @@ class ImageGeneratorService:
             if device == "cpu":
                 log.warning("No CUDA GPU detected — running on CPU (very slow!)")
 
-            self._pipe = self._pipe.to(device)
+            self._pipe = self._pipe.to(device)  # type: ignore[union-attr]
             self._loaded = True
 
             log.info(
@@ -104,11 +107,9 @@ class ImageGeneratorService:
         if not self._loaded:
             self.load()
 
-        import torch
 
         seed = int(req.seed) if req.seed is not None else random.randint(0, 2**32 - 1)
-        params = list(self._pipe.parameters())
-        device = params[0].device.type if params else "cuda"  # type: ignore[union-attr]
+        device = str(self._pipe.device)  # type: ignore[union-attr]
         gen = torch.Generator(device).manual_seed(seed)
 
         log.info(
@@ -122,7 +123,7 @@ class ImageGeneratorService:
             },
         )
 
-        result = self._pipe(  # type: ignore[operator]
+        result = self._pipe(  # type: ignore[union-attr, operator, misc]
             prompt=req.prompt,
             negative_prompt=req.negative_prompt,
             height=req.height,
