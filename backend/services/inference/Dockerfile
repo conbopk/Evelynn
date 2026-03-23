@@ -37,8 +37,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -sf python3.12 /usr/bin/python3 \
     && ln -sf python3.12 /usr/bin/python
 
-RUN pip install --upgrade pip
-
 # Copy venv from builder
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
