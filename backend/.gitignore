@@ -40,6 +40,8 @@ ENV/
 # Environment variables
 # =============================
 .env
+.env.prod
+.env.local
 .env.*
 !.env.example
 
@@ -79,6 +81,7 @@ coverage.xml
 # =============================
 .vscode/
 .idea/
+*.swp
 
 # =============================
 # OS files
@@ -89,6 +92,8 @@ Thumbs.db
 # =============================
 # Modal / ML cache
 # =============================
-models/
 hf-cache/
 .cache/
+
+# Docker
+*.tar

@@ -1,0 +1,41 @@
+services:
+  inference:
+    build:
+      context: .
+      target: builder         # use builder stage (has all tools, lighter than runtime)
+    image: evelynn-inference:dev
+    env_file: .env
+    environment:
+      ENV: development
+      LOG_FORMAT: console
+      LOG_LEVEL: DEBUG
+      PRELOAD_MODEL: "false"    # faster startup in dev; model loads on first request
+      HF_HUB_CACHE: /models
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app          # hot reload: mount source
+      - model-cache:/models     # persist model weights between restarts
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --reload-dir /app/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/healthz')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+volumes:
+  model-cache:
+    driver: local

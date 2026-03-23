@@ -1,0 +1,65 @@
+name: CD — Inference Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/services/inference/**"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Docker image tag (default: git SHA)"
+        required: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/evelynn-inference
+
+defaults:
+  run:
+    working-directory: backend/services/inference
+
+jobs:
+  build-push:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag }},enable=${{ github.event.inputs.tag != '' }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push
+        uses: docker/build-push-action@v7
+        with:
+          context: backend/services/inference
+          file: backend/services/inference/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output image tag
+        run: echo "Image pushed → ${{ steps.meta.outputs.tags }}"
