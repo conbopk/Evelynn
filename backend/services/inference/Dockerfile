@@ -32,7 +32,6 @@ FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS runtime
 # Install Python 3.12 (not included in CUDA base)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.12 \
-    python3.12-distutils \
     libpython3.12 \
     && rm -rf /var/lib/apt/lists/* \
     && ln -sf python3.12 /usr/bin/python3 \
