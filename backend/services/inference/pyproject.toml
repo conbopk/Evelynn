@@ -5,7 +5,7 @@ description = "Evelynn - Text-to-Image Inference Service"
 requires-python = ">=3.12.10"
 
 [tool.ruff]
-# Set the maximum line length to 79.
+# Set the maximum line length to 150.
 line-length = 150
 
 [tool.ruff.lint]
@@ -19,7 +19,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 known-first-party = ["app"]
 
 [tool.mypy]
-python_version = "3.12.10"
+python_version = "3.12"
 strict = false
 ignore_missing_imports = true
 exclude = ["tests/"]

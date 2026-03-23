@@ -131,7 +131,7 @@ class ImageGeneratorService:
             guidance_scale=req.guidance_scale,
             generator=gen
         )
-        img = result[0]
+        img = result.images[0]
 
         # ----------------------------------------------------------------
         # Upload to S3
