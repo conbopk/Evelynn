@@ -5,10 +5,24 @@ The ML pipeline and AWS S3 are mocked so tests run without a GPU or real cloud c
 """
 
 import os
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
+
+# ---------------------------------------------------------------------------
+# Mock heavy ML modules BEFORE any app import
+# ---------------------------------------------------------------------------
+_fake_torch = MagicMock()
+_fake_torch.cuda.is_available.return_value = False
+_fake_torch.bfloat16 = MagicMock()
+
+_fake_diffusers = MagicMock()
+_fake_diffusers.ZImagePipeline = MagicMock()
+
+sys.modules["torch"] = _fake_torch
+sys.modules["diffusers"] = _fake_diffusers
 
 # ---------------------------------------------------------------------------
 # Force test environment BEFORE any app module is imported
@@ -31,35 +45,29 @@ os.environ.update(
 
 
 # ---------------------------------------------------------------------------
-# Mock the heavy ML imports at module level
+# Mock setup
 # ---------------------------------------------------------------------------
 
-_fake_pipeline = MagicMock()
 _fake_image = MagicMock()
 _fake_image.save = MagicMock()
-_fake_pipeline.return_value.images = [_fake_image]
 
 
 @pytest.fixture(autouse=True)
 def mock_pipeline(tmp_path):
     """Replace the diffusion pipeline and S3 upload with lightweight mocks."""
 
-    # Patch ZImagePipeline.from_pretrained so no GPU / HF download is needed
-    with (
-        patch("diffusers.ZImagePipeline") as mock_pipe_cls,
-        patch("app.services.storage.S3StorageService.upload") as mock_s3,
-        patch("torch.cuda.is_available", return_value=False),
-    ):
-        mock_pipe_instance = MagicMock()
-        mock_param = MagicMock()
-        mock_pipe_instance.return_value.images = [_fake_image]
-        mock_param.device.type = "cpu"
-        mock_pipe_instance.parameters.return_value = [mock_param]
-        mock_pipe_instance.device = "cpu"  # Must be a string, not MagicMock
-        mock_pipe_cls.from_pretrained.return_value = mock_pipe_instance
+    mock_pipe_cls = _fake_diffusers.ZImagePipeline
+    mock_pipe_instance = MagicMock()
+    mock_param = MagicMock()
 
+    mock_pipe_instance.return_value.images = [_fake_image]
+    mock_param.device.type = "cpu"
+    mock_pipe_instance.parameters.return_value = [mock_param]
+    mock_pipe_instance.device = "cpu"
+    mock_pipe_cls.from_pretrained.return_value = mock_pipe_instance
+
+    with patch("app.services.storage.S3StorageService.upload") as mock_s3:
         mock_s3.return_value = "images/test-uuid.png"
-
         yield {
             "pipeline_cls": mock_pipe_cls,
             "pipeline": mock_pipe_instance,
@@ -70,7 +78,6 @@ def mock_pipeline(tmp_path):
 @pytest.fixture
 def client():
     """FastAPI TestClient with a fresh app instance per test."""
-    # Reset singleton so each test starts clean
     from app.services.image_generator import ImageGeneratorService
 
     ImageGeneratorService._instance = None
