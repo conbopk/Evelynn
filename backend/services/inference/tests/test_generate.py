@@ -13,6 +13,7 @@ VALID_PAYLOAD = {
 # Auth
 # ---------------------------------------------------------------------------
 
+
 def test_generate_no_api_key_return_401(client):
     res = client.post("/v1/generate", json=VALID_PAYLOAD)
     assert res.status_code == 401
@@ -30,6 +31,7 @@ def test_generate_wrong_api_key_returns_401(client):
 # ---------------------------------------------------------------------------
 # Validation
 # ---------------------------------------------------------------------------
+
 
 def test_generate_empty_prompt_returns_422(client, auth_headers):
     res = client.post("/v1/generate", json={**VALID_PAYLOAD, "prompt": ""}, headers=auth_headers)
@@ -57,6 +59,7 @@ def test_generate_negative_steps_returns_422(client, auth_headers):
 # ---------------------------------------------------------------------------
 # Success path (pipeline + S3 are mocked in conftest)
 # ---------------------------------------------------------------------------
+
 
 def test_generate_success(client, auth_headers, mock_pipeline):
     from app.services.image_generator import ImageGeneratorService
@@ -106,5 +109,5 @@ def test_generate_dimension_snapped_to_multiple_of_64(client, auth_headers, mock
 
     assert res.status_code == 200
     data = res.json()
-    assert data["width"] == 448     # 500 // 64 * 64
+    assert data["width"] == 448  # 500 // 64 * 64
     assert data["height"] == 448

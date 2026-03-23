@@ -37,18 +37,18 @@ def test_generate_request_snaps_dimensions():
     assert req.width % 64 == 0
     assert req.height % 64 == 0
     assert req.width == 640
-    assert req.height == 896        # 900 // 64 = 14, 14*64 = 896
+    assert req.height == 896  # 900 // 64 = 14, 14*64 = 896
 
 
 def test_settings_api_key_set():
     from app.core.config import Settings
 
-    s = Settings(API_KEYS="key1, key2, key3", _env_file=None) # type: ignore[call-arg]
+    s = Settings(API_KEYS="key1, key2, key3", _env_file=None)  # type: ignore[call-arg]
     assert s.api_key_set == {"key1", "key2", "key3"}
 
 
 def test_settings_empty_api_key_set():
     from app.core.config import Settings
 
-    s = Settings(API_KEYS="", _env_file=None)   # type: ignore[call-arg]
+    s = Settings(API_KEYS="", _env_file=None)  # type: ignore[call-arg]
     assert s.api_key_set == set()

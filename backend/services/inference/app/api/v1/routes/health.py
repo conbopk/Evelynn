@@ -22,11 +22,7 @@ async def liveness() -> Response:
     return Response(content="ok", status_code=status.HTTP_200_OK)
 
 
-@router.get(
-    "/readyz",
-    response_model=HealthResponse,
-    summary="Readiness probe — returns 200 only when the model is loaded"
-)
+@router.get("/readyz", response_model=HealthResponse, summary="Readiness probe — returns 200 only when the model is loaded")
 async def readiness() -> HealthResponse:
     svc = ImageGeneratorService.get_instance()
     loaded = svc.is_loaded

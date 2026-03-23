@@ -26,11 +26,30 @@ class _JsonFormatter(logging.Formatter):
         # Extra fields passed via `extra={}` in log calls
         for key, val in record.__dict__.items():
             if key not in {
-                "args", "asctime", "created", "exc_info", "exc_text",
-                "filename", "funcName", "id", "levelname", "levelno",
-                "lineno", "module", "msecs", "message", "msg", "name",
-                "pathname", "process", "processName", "relativeCreated",
-                "stack_info", "thread", "threadName", "taskName",
+                "args",
+                "asctime",
+                "created",
+                "exc_info",
+                "exc_text",
+                "filename",
+                "funcName",
+                "id",
+                "levelname",
+                "levelno",
+                "lineno",
+                "module",
+                "msecs",
+                "message",
+                "msg",
+                "name",
+                "pathname",
+                "process",
+                "processName",
+                "relativeCreated",
+                "stack_info",
+                "thread",
+                "threadName",
+                "taskName",
             }:
                 payload[key] = val
 

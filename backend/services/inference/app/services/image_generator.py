@@ -68,7 +68,7 @@ class ImageGeneratorService:
             import torch
             from diffusers import ZImagePipeline  # type: ignore[import]
 
-            token = (settings.HF_TOKEN or "").strip().strip("\"") or None
+            token = (settings.HF_TOKEN or "").strip().strip('"') or None
 
             os.environ["HF_HUB_CACHE"] = settings.HF_HUB_CACHE
 
@@ -108,7 +108,7 @@ class ImageGeneratorService:
 
         seed = int(req.seed) if req.seed is not None else random.randint(0, 2**32 - 1)
         params = list(self._pipe.parameters())
-        device = params[0].device.type if params else "cuda"      # type: ignore[union-attr]
+        device = params[0].device.type if params else "cuda"  # type: ignore[union-attr]
         gen = torch.Generator(device).manual_seed(seed)
 
         log.info(
@@ -122,14 +122,14 @@ class ImageGeneratorService:
             },
         )
 
-        result = self._pipe(    # type: ignore[operator]
+        result = self._pipe(  # type: ignore[operator]
             prompt=req.prompt,
             negative_prompt=req.negative_prompt,
             height=req.height,
             width=req.width,
             num_inference_steps=req.num_inference_steps,
             guidance_scale=req.guidance_scale,
-            generator=gen
+            generator=gen,
         )
         img = result.images[0]
 

@@ -11,12 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore")
 
     # -------------------------------------------------------------------------
     # App
@@ -30,7 +25,7 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------------------
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    WORKERS: int = 1 # keep 1 — model is loaded in memory per worker
+    WORKERS: int = 1  # keep 1 — model is loaded in memory per worker
 
     # -------------------------------------------------------------------------
     # Auth
@@ -41,7 +36,7 @@ class Settings(BaseSettings):
 
     @property
     def api_key_set(self) -> set[str]:
-        return { k.strip() for k in self.API_KEYS.split(",") if k.strip() }
+        return {k.strip() for k in self.API_KEYS.split(",") if k.strip()}
 
     # -------------------------------------------------------------------------
     # CORS

@@ -33,12 +33,7 @@ class S3StorageService:
     def upload(self, local_path: Path, s3_key: str, content_type: str = "image/png") -> str:
         """Upload a local file and return the S3 key."""
         try:
-            self._client.upload_file(
-                str(local_path),
-                self._bucket,
-                s3_key,
-                ExtraArgs={"ContentType": content_type}
-            )
+            self._client.upload_file(str(local_path), self._bucket, s3_key, ExtraArgs={"ContentType": content_type})
             log.debug("S3 upload success", extra={"key": s3_key, "bucket": self._bucket})
             return s3_key
         except (BotoCoreError, ClientError) as exc:

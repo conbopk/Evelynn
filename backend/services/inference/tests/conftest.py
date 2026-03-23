@@ -40,8 +40,6 @@ _fake_image.save = MagicMock()
 _fake_pipeline.return_value.images = [_fake_image]
 
 
-
-
 @pytest.fixture(autouse=True)
 def mock_pipeline(tmp_path):
     """Replace the diffusion pipeline and S3 upload with lightweight mocks."""

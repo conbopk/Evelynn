@@ -21,6 +21,7 @@ configure_logging()
 async def lifespan(app: FastAPI):
     """Startup / shutdown lifecycle."""
     import logging
+
     log = logging.getLogger(__name__)
 
     log.info("Starting inference service", extra={"model_id": settings.MODEL_ID})
@@ -35,6 +36,7 @@ async def lifespan(app: FastAPI):
     yield
 
     log.info("Shutting down inference service")
+
 
 app = FastAPI(
     title="Evelynn Inference Service",
@@ -59,11 +61,9 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Prometheus metrics — /metrics
 # ---------------------------------------------------------------------------
-Instrumentator(
-    should_group_status_codes=True,
-    should_group_untemplated=True,
-    excluded_handlers=["/healthz", "/readyz", "/metrics"]
-).instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
+Instrumentator(should_group_status_codes=True, should_group_untemplated=True, excluded_handlers=["/healthz", "/readyz", "/metrics"]).instrument(
+    app
+).expose(app, endpoint="/metrics", include_in_schema=False)
 
 # ---------------------------------------------------------------------------
 # Routers
