@@ -107,7 +107,6 @@ class ImageGeneratorService:
         if not self._loaded:
             self.load()
 
-
         seed = int(req.seed) if req.seed is not None else random.randint(0, 2**32 - 1)
         device = str(self._pipe.device)  # type: ignore[union-attr]
         gen = torch.Generator(device).manual_seed(seed)
