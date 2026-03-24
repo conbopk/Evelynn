@@ -1,0 +1,46 @@
+{
+  "title": "Evelynn Inference Service",
+  "uid": "evelynn-inference",
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request Rate (req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "rate(http_requests_total{job='evelynn-inference'}[1m])",
+        "legendFormat": "{{method}} {{handler}} {{status_code}}"
+      }]
+    },
+    {
+      "id": 2,
+      "title": "P95 Latency (s)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='evelynn-inference'}[5m]))",
+        "legendFormat": "p95 {{handler}}"
+      }]
+    },
+    {
+      "id": 3,
+      "title": "Error Rate (%)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 8, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "sum(rate(http_requests_total{job='evelynn-inference',status_code=~'5..'}[5m])) / sum(rate(http_requests_total{job='evelynn-inference'}[5m])) * 100"
+      }]
+    },
+    {
+      "id": 4,
+      "title": "Request In-Flight",
+      "type": "stat",
+      "gridPos": { "x": 6, "y": 8, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "sum(http_requests_inprogress{job='evelynn-inference'})"
+      }]
+    }
+  ]
+}

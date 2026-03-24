@@ -2,7 +2,7 @@ services:
   inference:
     build:
       context: .
-      target: builder         # use builder stage (has all tools, lighter than runtime)
+      target: runtime
     image: evelynn-inference:dev
     env_file: .env
     environment:

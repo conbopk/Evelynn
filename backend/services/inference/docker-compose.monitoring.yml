@@ -1,0 +1,31 @@
+# Used exclusively to enable monitoring stack
+# Usage: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    ports:
+      - "3001:3000"               # 3000 đã dùng cho Next.js nên dùng 3001
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin     # đổi khi production
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:
+  grafana-data:

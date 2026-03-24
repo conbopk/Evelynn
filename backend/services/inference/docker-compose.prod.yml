@@ -5,7 +5,7 @@
 
 services:
   inference:
-    image: ghcr.io/your-org/evelynn-inference:${IMAGE_TAG:-latest}    # TODO: change
+    image: ghcr.io/conbopk/evelynn-inference:${IMAGE_TAG:-latest}
     restart: unless-stopped
     env_file: .env.prod
     environment:

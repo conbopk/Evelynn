@@ -1,26 +1,27 @@
 # =============================================================================
 # Stage 1 — builder: install Python deps into a venv
 # =============================================================================
-FROM python:3.12.10-slim AS builder
-
-WORKDIR /build
+# Stage 1 — builder
+FROM ubuntu:24.04 AS builder
 
 # System deps needed to compile some wheels
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    build-essential \
+    python3.12 python3.12-venv python3-pip \
+    git build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip
+WORKDIR /build
 
 # Copy only requirements first (layer cache-friendly)
 COPY requirements/ requirements/
 
 # Install base + GPU deps into a venv
-RUN python -m venv /opt/venv
+RUN python3.12 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install --no-cache-dir -r requirements/gpu.txt
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements/gpu.txt
+
 
 # =============================================================================
 # Stage 2 — runtime image
