@@ -9,8 +9,10 @@ COMPOSE_PROD := docker compose -f ${SERVICE_DIR}/docker-compose.yml \
 COMPOSE_MON	 := docker compose -f ${SERVICE_DIR}/docker-compose.yml \
 							   -f ${SERVICE_DIR}/docker-compose.monitoring.yml
 
-.PHONY: help dev stop logs shell test test-local lint format typecheck \
+.PHONY: all help dev stop logs shell test test-local lint format typecheck \
 		build push prod-up prod-down monitor monitor-stop clean
+
+all: help ## Default target
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -84,7 +86,7 @@ prod-down: ## Stop production stack
 # =============================================================================
 
 monitor: ## Start app + Prometheus + Grafana
-	$(COMPOSE_MON) up --build
+	$(COMPOSE_MON) up --build -d
 	@echo ""
 	@echo "  Prometheus : http://localhost:9090"
 	@echo "  Grafana    : http://localhost:3001 (admin / admin)"
