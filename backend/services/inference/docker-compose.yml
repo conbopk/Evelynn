@@ -2,7 +2,7 @@ services:
   inference:
     build:
       context: .
-      target: runtime
+      target: runtime           # full CUDA runtime image — matches production environment
     image: evelynn-inference:dev
     env_file: .env
     environment:

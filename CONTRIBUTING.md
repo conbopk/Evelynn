@@ -6,7 +6,8 @@ Thank you for your interest in contributing! This guide will get you set up quic
     
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
+- [Frontend Development](#frontend-development)
+- [Backend Development](#backend-development)
 - [Workflow](#workflow)
 - [Commit Convention](#commit-convention)
 - [Pull Request Guidelines](#pull-request-guidelines)
@@ -35,9 +36,7 @@ Be respectful and constructive. We follow the [Contributor Covenant](https://www
     
 ---
 
-## Development Setup
-
-### Frontend
+## Frontend Development
 
 ```bash
 cd frontend
@@ -49,14 +48,86 @@ npm run db:push   # apply schema to dev DB
 npm run dev       # start dev server on :3000
 ```
 
-### Backend
-
+**Quality checks before committing:**
 ```bash
-cd backend/text-to-image
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-modal setup
+npm run check         # eslint + tsc
+npm run format:write  # prettier
 ```
+
+---
+
+### Backend Development
+
+**Choose one of the following 2 approaches to get started with backend**
+
+1. Modal - build backend with Modal serverless (current production)
+
+    ```bash
+    cd backend/text-to-image
+    python -m venv .venv && source .venv/bin/activate
+    pip install -r requirements.txt
+    modal setup
+    ```
+
+2. Self-hosted FastAPI
+
+    #### Setup (Python 3.12 required)
+    
+    ```bash
+    cd backend/services/inference
+   
+    python -m venv .venv
+   
+    # Windows
+    .venv\Scripts\Activate.ps1
+    # macOS /Linux
+    source .venv/bin/activate 
+   
+    pip install --upgrade pip
+    pip install -r requirements/dev.txt   # base + test/lint tools, no Pytorch
+   
+    cp .env.example .env
+    # Set ENV=development, PRELOAD_MODEL=false — model won't load, safe for dev
+    ```
+    
+    #### Run locally
+    
+    ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   # → http://localhost:8000/docs
+   ```
+   
+    #### Run with Docker
+    ```bash
+   docker compose up --build
+   ```
+   
+    #### Quality checks before committing
+
+    ```bash
+   ruff check app/ tests/           # lint
+   ruff format --check app/ tests/  # format check
+   ruff format app/ tests/          # auto-fix
+   mypy app/                        # type check
+   ```
+   
+    Or use the Makefile from the backend root:
+    ```bash
+   cd backend
+   make lint      # ruff check + format check
+   make format    # ruff auto-fix
+   make typecheck
+   ```
+    
+    #### Run tests
+
+    ```bash
+   pytest                           # all tests
+   pytest tests/test_health.py -v   # single file
+   pytest -k "test_generate" -v     # by name pattern
+   ```
+   
+    Tests run without GPU or AWS credentials — everything is mocked in `conftest.py`.
 
 ---
 
@@ -80,7 +151,7 @@ main           ← stable, always deployable
    git checkout -b feat/my-feature
    ```
 
-3. **Make changes**, then run quality checks:
+3. **Make your changes**, then run quality checks:
     ```bash
    cd frontend
    npm run check          # eslint + tsc
@@ -122,6 +193,7 @@ feat(create): add negative prompt support in UI
 fix(api): handle S3 key with spaces in presigned URL
 docs: update self-hosting guide in README
 chore(deps): bump next to 16.1.6
+test(generate): add seed determinism test
 ```
 
 ---
