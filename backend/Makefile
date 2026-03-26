@@ -63,6 +63,7 @@ build: ## Build the production Docker image
 		$(SERVICE_DIR)
 
 push: build ## Build and push to GHCR (requires IMAGE_TAG env var)
+	`@test` -n "$(IMAGE_TAG)" || (echo "IMAGE_TAG is required, e.g. make push IMAGE_TAG=v1.0.0" && exit 1)
 	docker tag evelynn-inference:latest \
 		ghcr.io/$(shell git config --get remote.origin.url | sed 's/.*github.com[:/]//' | sed 's/\.git//')/evelynn-inference:$(IMAGE_TAG)
 	docker push \

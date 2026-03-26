@@ -240,7 +240,7 @@
 │     ▼                                                    │
 │  POST /v1/generate                                       │
 │     │                                                    │
-│     ├── require_api_key (X-API-Key header) ──► 401       │
+│     ├── require_api_key (X-API-Key header)               │
 │     │                                                    │
 │     ├── GenerateRequest validation ──────────► 422       │
 │     │   (prompt, dimensions snap to 64,                  │

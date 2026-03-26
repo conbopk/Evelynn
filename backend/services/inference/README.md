@@ -85,15 +85,15 @@ Tests run without a GPU — the pipeline and S3 are mocked via `conftest.py`.
 
 **Request body:**
 
-| Field                 | Type           | Default  | Description                           |
-|-----------------------|----------------|----------|---------------------------------------|
-| `prompt`              | string         | required | Text prompt (<10000 chars)            |
-| `negative_prompt`     | string \| null | null     | Things to avoid                       |
-| `width`               | int            | 1024     | Image width (snapped to nearest 256)  |
-| `height`              | int            | 1024     | Image height (snapped to nearest 256) |
-| `num_inference_steps` | int            | 9        | Denoising steps (1-50)                |
-| `guidance_scale`      | float          | 0.0      | CFG scale (0-20)                      |
-| `seed`                | int \| null    | random   | Seed for reproducibility              |
+| Field                 | Type           | Default  | Description                                |
+|-----------------------|----------------|----------|--------------------------------------------|
+| `prompt`              | string         | required | Text prompt (<10000 chars)                 |
+| `negative_prompt`     | string \| null | null     | Things to avoid                            |
+| `width`               | int            | 1024     | Image width (floored to a multiple of 64)  |
+| `height`              | int            | 1024     | Image height (floored to a multiple of 64) |
+| `num_inference_steps` | int            | 9        | Denoising steps (1-50)                     |
+| `guidance_scale`      | float          | 0.0      | CFG scale (0-20)                           |
+| `seed`                | int \| null    | random   | Seed for reproducibility                   |
 
 **Response:**
 

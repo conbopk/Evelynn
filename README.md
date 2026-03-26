@@ -170,7 +170,7 @@ modal run text-to-image.py --prompt "a dragon flying over mountains"
 cd backend/services/inference
 
 cp .env.example .env
-# Fill in: API_KEYs, AWS_*, HF_TOKEN, MODEL_ID
+# Fill in: API_KEYS, AWS_*, HF_TOKEN, MODEL_ID
 
 # Dev (hot reload, PRELOAD_MODEL=false)
 docker compose up --build

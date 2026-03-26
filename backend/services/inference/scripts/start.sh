@@ -38,7 +38,9 @@ fi
 # —————————————————————————————————————————————————————————————————————————————
 if command -v nvidia-smi &>/dev/null; then
   log "GPU info:"
-  nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | sed 's/^/  /'
+  if ! nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | sed 's/^/  /'; then
+    log "WARNING: nvidia-smi is available but GPU query failed — continuing on CPU"
+  fi
 else
   log 'WARNING: nvidia-smi not found — running on CPU'
 fi

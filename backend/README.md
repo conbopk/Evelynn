@@ -35,8 +35,8 @@ backend/
 ```bash
 # From /backend
 make dev        # start inference service in dev mode
-make test       # run all tests
-make lint       # lint all services
+make test       # run backend tests (current: inference service)
+make lint       # lint backend code (current: inference service)
 ```
 
 See the [Makefile](./Makefile) for all available commands.

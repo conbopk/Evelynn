@@ -24,7 +24,7 @@ coverage.xml
 node_modules/
 .next/
 out/
-.vercel
+.vercel/
 
 # Prisma
 frontend/prisma/migrations/dev.db

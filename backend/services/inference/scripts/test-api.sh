@@ -27,18 +27,21 @@ echo ""
 
 # 1. Liveness
 echo "1. Liveness probe (/v1/healthz)"
-CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/v1/healthz")
+CURL_OPTS=(--silent --show-error --connect-timeout 5 --max-time 20)
+CODE=$(curl "${CURL_OPTS[@]}" -o /dev/null -w "%{http_code}" "$BASE_URL/v1/healthz")
 [[ "$CODE" == "200" ]] && pass "200 OK" || fail "Expected 200, got $CODE"
 
 # 2. Readiness
 echo "2. Readiness probe (/v1/readyz)"
-BODY=$(curl -s "$BASE_URL/v1/readyz")
-echo "    Response: $BODY"
-pass "Got response"
+READY_BODY="$(mktemp)"
+READY_CODE=$(curl -s -o "$READY_BODY" -w "%{http_code}" "$BASE_URL/v1/readyz")
+echo "    Response: $(cat "$READY_BODY")"
+rm -f "$READY_BODY"
+[[ "$READY_CODE" == "200" ]] && pass "200 Ready" || fail "Expected 200, got $READY_CODE"
 
 # 3. Auth rejected
 echo "3. Generate without API key → 401"
-CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+CODE=$(curl "${CURL_OPTS[@]}" -o /dev/null -w "%{http_code}" \
   -X POST "$BASE_URL/v1/generate" \
   -H "$H_CT" \
   -d '{"prompt":"test"}')
@@ -46,7 +49,7 @@ CODE=$(curl -s -o /dev/null -w "%{http_code}" \
 
 # 4. Validation error
 echo "4. Generate with empty prompt → 422"
-CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+CODE=$(curl "${CURL_OPTS[@]}" -o /dev/null -w "%{http_code}" \
   -X POST "$BASE_URL/v1/generate" \
   -H "$H_CT" -H "$H_AUTH" \
   -d '{"prompt":""}')
@@ -54,7 +57,7 @@ CODE=$(curl -s -o /dev/null -w "%{http_code}" \
 
 # 5. Metrics endpoint
 echo "5. Prometheus metrics (/metrics)"
-CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/metrics")
+CODE=$(curl "${CURL_OPTS[@]}" -o /dev/null -w "%{http_code}" "$BASE_URL/metrics")
 [[ "$CODE" == "200" ]] && pass "200 OK" || fail "Expected 200, got $CODE"
 
 echo ""
