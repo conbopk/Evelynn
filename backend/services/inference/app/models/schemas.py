@@ -45,7 +45,7 @@ class GenerateRequest(BaseModel):
                 "negative_prompt": "blurry, low quality",
                 "width": 1024,
                 "height": 1024,
-                "num_inference_step": 9,
+                "num_inference_steps": 9,
                 "guidance_scale": 0.0,
                 "seed": 42,
             }
