@@ -62,6 +62,14 @@ export async function generateImage(
       return { success: false, error: "guidance_scale must be a non-negative number" };
     }
 
+    const MAX_DIM = 2048;
+    const MIN_DIM = 256;
+
+    if (data.width < MIN_DIM || data.width > MAX_DIM)
+      return { success: false, error: `Width must be between ${MIN_DIM} and ${MAX_DIM}` };
+    if (data.height < MIN_DIM || data.height > MAX_DIM)
+      return { success: false, error: `Height must be between ${MIN_DIM} and ${MAX_DIM}` };
+
     const creditsNeeded = 1;
 
     const user = await db.user.findUnique({
