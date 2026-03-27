@@ -2,7 +2,7 @@ import modal
 import os
 import uuid
 import tempfile
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 import random
 
 app = modal.App("evelynn-ai-image-generator")
@@ -34,6 +34,13 @@ class Req(BaseModel):
     num_inference_steps: int | None = None
     guidance_scale: float | None = None
     seed: int | None = None
+
+    @field_validator("width", "height")
+    @classmethod
+    def clamp_validator(cls, v: int) -> int:
+        if not (256 <= v <= 2048):
+            raise ValueError(f"Dimension must be between 256 and 2048, got {v}")
+        return v
 
 
 @app.cls(
