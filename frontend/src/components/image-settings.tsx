@@ -60,6 +60,7 @@ export default function ImageSettings({
                   id="width"
                   type="number"
                   min={256}
+                  max={2048}
                   step={16}
                   value={width}
                   onChange={(e) => {
@@ -77,6 +78,7 @@ export default function ImageSettings({
                   id="height"
                   type="number"
                   min={256}
+                  max={2048}
                   step={16}
                   value={height}
                   onChange={(e) => {
