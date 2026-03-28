@@ -51,6 +51,7 @@ export default function ProjectsPage() {
   const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([undefined]);
   const [stackIndex, setStackIndex] = useState(0);
   const [hasNext, setHasNext] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
 
   const currentCursor = cursorStack[stackIndex];
   const hasPrev = stackIndex > 0;
@@ -70,6 +71,7 @@ export default function ProjectsPage() {
           setFilteredProjects(result.imageProjects as ImageProject[]);
           setHasNext(result.pagination?.hasNext ?? false);
           setTotalCount(result.pagination?.total ?? 0);
+          setNextCursor(result.pagination?.nextCursor);
         }
       } catch (e) {
         console.error("Image projects initialization failed:", e)
@@ -107,12 +109,11 @@ export default function ProjectsPage() {
     setFilteredProjects(filtered);
   }, [imageProjects, searchQuery, sortBy]);
 
-  const handleNext = async () => {
-    const result = await getUserImageProjectsPaginated(currentCursor);
-    if (result.success && result.pagination?.nextCursor) {
+  const handleNext = () => {
+    if (nextCursor) {
       const newStack = [
           ...cursorStack.slice(0, stackIndex + 1),
-          result.pagination.nextCursor,
+          nextCursor,
       ];
       setCursorStack(newStack);
       setStackIndex(stackIndex + 1);

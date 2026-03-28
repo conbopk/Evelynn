@@ -191,7 +191,10 @@ export async function getUserImageProjectsPaginated(cursor?: string) {
     const [imageProjects, total] = await db.$transaction([
       db.imageProject.findMany({
         where: { userId: session.user.id },
-        orderBy: { createdAt: "desc" },
+        orderBy: [
+          { createdAt: "desc" },
+          { id: "desc" },
+        ],
         take: PAGE_SIZE + 1,            // take another 1 to see if there is still the next page
         ...(cursor ? {
           cursor: { id: cursor },
