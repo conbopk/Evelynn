@@ -168,7 +168,10 @@ export const getUserImageProjects = cache(async () => {
 
     const imageProjects = await db.imageProject.findMany({
           where: { userId: session.user.id },
-          orderBy: { createdAt: "desc" },
+          orderBy: [
+            { createdAt: "desc" },
+            { id: "desc" },
+          ],
           take: PAGE_SIZE,
         });
 

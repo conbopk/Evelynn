@@ -58,6 +58,7 @@ export default function ProjectsPage() {
 
   // Load page whenever currentCursor changes
   useEffect(() => {
+    let cancelled = false;
     const loadPage = async () => {
       setIsLoading(true);
       try {
@@ -66,7 +67,7 @@ export default function ProjectsPage() {
             getUserImageProjectsPaginated(currentCursor),
         ]);
 
-        if (result.success && result.imageProjects) {
+        if (!cancelled && result.success && result.imageProjects) {
           setImageProjects(result.imageProjects as ImageProject[]);
           setFilteredProjects(result.imageProjects as ImageProject[]);
           setHasNext(result.pagination?.hasNext ?? false);
@@ -76,11 +77,14 @@ export default function ProjectsPage() {
       } catch (e) {
         console.error("Image projects initialization failed:", e)
       } finally {
-        setIsLoading(false)
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     void loadPage();
+    return () => {
+      cancelled = true;
+    };
   }, [currentCursor]);
 
   // Filter and sort projects
@@ -110,7 +114,8 @@ export default function ProjectsPage() {
   }, [imageProjects, searchQuery, sortBy]);
 
   const handleNext = () => {
-    if (nextCursor) {
+    if (nextCursor && !isLoading) {
+      setIsLoading(true);
       const newStack = [
           ...cursorStack.slice(0, stackIndex + 1),
           nextCursor,
@@ -122,7 +127,8 @@ export default function ProjectsPage() {
   };
 
   const handlePrev = () => {
-    if (stackIndex > 0) {
+    if (stackIndex > 0 && !isLoading) {
+      setIsLoading(true);
       setStackIndex(stackIndex - 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -157,6 +163,23 @@ export default function ProjectsPage() {
     if (result.success) {
       setImageProjects((prev) => prev.filter((p) => p.id !== projectId));
       setFilteredProjects((prev) => prev.filter((p) => p.id !== projectId));
+
+      // Re-sync pagination
+      const refreshResult = await getUserImageProjectsPaginated(currentCursor);
+
+      if (refreshResult.success && refreshResult.imageProjects) {
+        // Update metadata
+        setTotalCount(refreshResult.pagination?.total ?? 0);
+        setHasNext(refreshResult.pagination?.hasNext ?? false);
+        setNextCursor(refreshResult.pagination?.nextCursor);
+
+        // If the current page is empty and there is a prev page
+        if (refreshResult.imageProjects.length === 0 && hasPrev) {
+          setStackIndex(stackIndex - 1);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
       toast.success("Image deleted successfully");
     } else {
       toast.error(result.error ?? "Failed to delete image");
@@ -195,7 +218,7 @@ export default function ProjectsPage() {
                 <p className='text-muted-foreground text-base'>
                   Manage and organize all your text-to-image generations (
                   {searchQuery ? `${filteredProjects.length} of ${totalCount}` : totalCount}{" "}
-                  {filteredProjects.length === 1 ? "image" : "images"})
+                  {totalCount === 1 ? "image" : "images"})
                 </p>
               </div>
               <Button
