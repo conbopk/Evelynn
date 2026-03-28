@@ -12,7 +12,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigg
 import {toast} from "sonner";
 import {authClient} from "~/lib/auth-client";
 import {getDownloadUrl} from "~/actions/download-image";
-import {deleteImageProject, getUserImageProjectsPaginated} from "~/actions/text-to-image";
+import {deleteImageProject, getUserImageProjectsPaginated, type ImageProjectsCursor} from "~/actions/text-to-image";
 import { ExpandableText } from "~/components/expandable-text";
 import { Pagination } from "~/components/pagination";
 import { ImageLightbox } from "~/components/image-lightbox";
@@ -48,10 +48,10 @@ export default function ProjectsPage() {
   const [sortBy, setSortBy] = useState<SortBy>("newest");
   
   // Cursor-based pagination state
-  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([undefined]);
+  const [cursorStack, setCursorStack] = useState<(ImageProjectsCursor | undefined)[]>([undefined]);
   const [stackIndex, setStackIndex] = useState(0);
   const [hasNext, setHasNext] = useState(false);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  const [nextCursor, setNextCursor] = useState<ImageProjectsCursor | undefined>(undefined);
 
   const currentCursor = cursorStack[stackIndex];
   const hasPrev = stackIndex > 0;
@@ -193,7 +193,6 @@ export default function ProjectsPage() {
                   Your Image Projects
                 </h1>
                 <p className='text-muted-foreground text-base'>
-                  {/*TODO: fix total images*/}
                   Manage and organize all your text-to-image generations (
                   {searchQuery ? `${filteredProjects.length} of ${totalCount}` : totalCount}{" "}
                   {filteredProjects.length === 1 ? "image" : "images"})

@@ -30,6 +30,12 @@ interface GenerateImageResult {
   error?: string;
 }
 
+export type ImageProjectsCursor = {
+  createdAt: string;
+  id: string;
+};
+
+
 const MAX_DIM = 2048;
 const MIN_DIM = 256;
 const PAGE_SIZE = 20;
@@ -52,10 +58,10 @@ export async function generateImage(
       return { success: false, error: "Prompt cannot be empty" };
 
     if (!Number.isInteger(data.width) || data.width < MIN_DIM || data.width > MAX_DIM)
-      return { success: false, error: `Width must be between ${MIN_DIM} and ${MAX_DIM}` };
+      return { success: false, error: `Width must be an integer between ${MIN_DIM} and ${MAX_DIM}` };
 
     if (!Number.isInteger(data.height) || data.height < MIN_DIM || data.height > MAX_DIM)
-      return { success: false, error: `Height must be between ${MIN_DIM} and ${MAX_DIM}` };
+      return { success: false, error: `Height must be an integer between ${MIN_DIM} and ${MAX_DIM}` };
 
     if (
         data.num_inference_steps !== undefined &&
@@ -183,23 +189,30 @@ export const getUserImageProjects = cache(async () => {
 });
 
 
-export async function getUserImageProjectsPaginated(cursor?: string) {
+export async function getUserImageProjectsPaginated(cursor?: ImageProjectsCursor) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
     const [imageProjects, total] = await db.$transaction([
       db.imageProject.findMany({
-        where: { userId: session.user.id },
+        where: {
+          userId: session.user.id,
+          ...(cursor ? {
+            OR: [
+              { createdAt: { lt: new Date(cursor.createdAt) } },
+              {
+                createdAt: new Date(cursor.createdAt),
+                id: { lt: cursor.id },
+              },
+            ],
+          } : {})
+        },
         orderBy: [
           { createdAt: "desc" },
           { id: "desc" },
         ],
         take: PAGE_SIZE + 1,            // take another 1 to see if there is still the next page
-        ...(cursor ? {
-          cursor: { id: cursor },
-          skip: 1,                      // ignore the cursor record itself
-        } : {}),
       }),
       db.imageProject.count({
         where: { userId: session.user.id },
@@ -208,7 +221,10 @@ export async function getUserImageProjectsPaginated(cursor?: string) {
 
     const hasNext = imageProjects.length > PAGE_SIZE;
     const items = hasNext ? imageProjects.slice(0, PAGE_SIZE) : imageProjects;
-    const nextCursor = hasNext ? items[items.length - 1]?.id : undefined;
+    const nextCursor = hasNext ? {
+      createdAt: items[items.length - 1]!.createdAt.toISOString(),
+      id: items[items.length - 1]!.id,
+    } : undefined;
 
     const safeProjects = items.map((p) => ({
       ...p,
