@@ -5,6 +5,9 @@ import {Card, CardContent} from "~/components/ui/card";
 import {Button} from "~/components/ui/button";
 
 
+const MIN_DIM = 256;
+const MAX_DIM = 2048;
+
 interface ImageSettingsProps {
   prompt: string;
   width: number;
@@ -59,8 +62,8 @@ export default function ImageSettings({
               <input
                   id="width"
                   type="number"
-                  min={256}
-                  max={2048}
+                  min={MIN_DIM}
+                  max={MAX_DIM}
                   step={16}
                   value={width}
                   onChange={(e) => {
@@ -69,6 +72,9 @@ export default function ImageSettings({
                   }}
                   className='border border-input bg-background w-full rounded-md px-2 py-1.5 text-xs'
               />
+              <p className='mt-0.5 text-xs text-muted-foreground'>
+                {MIN_DIM}—{MAX_DIM}
+              </p>
             </div>
             <div>
               <label htmlFor='height' className='mb-1 flex items-center gap-1 text-xs font-semibold'>
@@ -77,8 +83,8 @@ export default function ImageSettings({
               <input
                   id="height"
                   type="number"
-                  min={256}
-                  max={2048}
+                  min={MIN_DIM}
+                  max={MAX_DIM}
                   step={16}
                   value={height}
                   onChange={(e) => {
@@ -87,6 +93,9 @@ export default function ImageSettings({
                   }}
                   className='border border-input bg-background w-full rounded-md px-2 py-1.5 text-xs'
               />
+              <p className='mt-0.5 text-xs text-muted-foreground'>
+                {MIN_DIM}—{MAX_DIM}
+              </p>
             </div>
           </div>
 

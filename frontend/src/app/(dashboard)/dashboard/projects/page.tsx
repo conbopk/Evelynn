@@ -12,7 +12,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigg
 import {toast} from "sonner";
 import {authClient} from "~/lib/auth-client";
 import {getDownloadUrl} from "~/actions/download-image";
-import {deleteImageProject, getUserImageProjects} from "~/actions/text-to-image";
+import {deleteImageProject, getUserImageProjectsPaginated} from "~/actions/text-to-image";
 import { ExpandableText } from "~/components/expandable-text";
 import { Pagination } from "~/components/pagination";
 import { ImageLightbox } from "~/components/image-lightbox";
@@ -43,39 +43,43 @@ export default function ProjectsPage() {
   const [lightboxImage, setLightboxImage] = useState<ImageProject | null>(null);
   const [imageProjects, setImageProjects] = useState<ImageProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ImageProject[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("newest");
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    total: 0, totalPages: 1, hasNext: false, hasPrev: false,
-  });
+  
+  // Cursor-based pagination state
+  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([undefined]);
+  const [stackIndex, setStackIndex] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
 
+  const currentCursor = cursorStack[stackIndex];
+  const hasPrev = stackIndex > 0;
+
+  // Load page whenever currentCursor changes
   useEffect(() => {
-    const initializeProjects = async () => {
+    const loadPage = async () => {
+      setIsLoading(true);
       try {
-        // Fetch session and projects in parallel
-        const [, projectsResult] = await Promise.all([
+        const [, result] = await Promise.all([
             authClient.getSession(),
-            getUserImageProjects(page),
+            getUserImageProjectsPaginated(currentCursor),
         ]);
 
-        // Set image projects
-        if (projectsResult.success && projectsResult.imageProjects) {
-          setImageProjects(projectsResult.imageProjects as ImageProject[]);
-          setFilteredProjects(projectsResult.imageProjects as ImageProject[]);
-          if (projectsResult.pagination) {
-            setPagination(projectsResult.pagination);
-          }
+        if (result.success && result.imageProjects) {
+          setImageProjects(result.imageProjects as ImageProject[]);
+          setFilteredProjects(result.imageProjects as ImageProject[]);
+          setHasNext(result.pagination?.hasNext ?? false);
+          setTotalCount(result.pagination?.total ?? 0);
         }
       } catch (e) {
-        console.error("Image projects initialization failed:", e);
+        console.error("Image projects initialization failed:", e)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     };
 
-    void initializeProjects();
-  }, [page]);
+    void loadPage();
+  }, [currentCursor]);
 
   // Filter and sort projects
   useEffect(() => {
@@ -103,26 +107,25 @@ export default function ProjectsPage() {
     setFilteredProjects(filtered);
   }, [imageProjects, searchQuery, sortBy]);
 
+  const handleNext = async () => {
+    const result = await getUserImageProjectsPaginated(currentCursor);
+    if (result.success && result.pagination?.nextCursor) {
+      const newStack = [
+          ...cursorStack.slice(0, stackIndex + 1),
+          result.pagination.nextCursor,
+      ];
+      setCursorStack(newStack);
+      setStackIndex(stackIndex + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-  // Reload when page change
-  useEffect(() => {
-    const loadPage = async () => {
-      setIsLoading(true);
-      try {
-        const result = await getUserImageProjects(page);
-        if (result.success && result.imageProjects) {
-          setImageProjects(result.imageProjects as ImageProject[]);
-          if (result.pagination) setPagination(result.pagination);
-        }
-      } catch (e) {
-        console.error("Image projects initialization failed:", e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadPage();
-  }, [page]);
+  const handlePrev = () => {
+    if (stackIndex > 0) {
+      setStackIndex(stackIndex - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const handleDownload = async (img: ImageProject, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -152,6 +155,10 @@ export default function ProjectsPage() {
     const result = await deleteImageProject(projectId);
     if (result.success) {
       setImageProjects((prev) => prev.filter((p) => p.id !== projectId));
+      setFilteredProjects((prev) => prev.filter((p) => p.id !== projectId));
+      toast.success("Image deleted successfully");
+    } else {
+      toast.error(result.error ?? "Failed to delete image");
     }
   };
 
@@ -185,8 +192,9 @@ export default function ProjectsPage() {
                   Your Image Projects
                 </h1>
                 <p className='text-muted-foreground text-base'>
+                  {/*TODO: fix total images*/}
                   Manage and organize all your text-to-image generations (
-                  {filteredProjects.length}{" "}
+                  {searchQuery ? `${filteredProjects.length} of ${totalCount}` : totalCount}{" "}
                   {filteredProjects.length === 1 ? "image" : "images"})
                 </p>
               </div>
@@ -341,16 +349,12 @@ export default function ProjectsPage() {
                 </div>
             )}
 
-            {/*Load More Button - implement pagination*/}
+            {/*Cursor-based Pagination*/}
             <Pagination
-              page={page}
-              totalPages={pagination.totalPages}
-              hasNext={pagination.hasNext}
-              hasPrev={pagination.hasPrev}
-              onPageChange={(p) => {
-                setPage(p);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+              onNext={handleNext}
+              onPrev={handlePrev}
             />
           </div>
         </SignedIn>

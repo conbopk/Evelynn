@@ -30,6 +30,10 @@ interface GenerateImageResult {
   error?: string;
 }
 
+const MAX_DIM = 2048;
+const MIN_DIM = 256;
+const PAGE_SIZE = 20;
+
 export async function generateImage(
     data: GenerateImageData,
 ): Promise<GenerateImageResult> {
@@ -43,32 +47,29 @@ export async function generateImage(
 
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
     if (!data.prompt.trim())
       return { success: false, error: "Prompt cannot be empty" };
-    if (!Number.isInteger(data.width) || data.width <= 0)
-      return { success: false, error: "Width must be a positive integer" };
-    if (!Number.isInteger(data.height) || data.height <= 0)
-      return { success: false, error: "Height must be a positive integer" };
+
+    if (!Number.isInteger(data.width) || data.width < MIN_DIM || data.width > MAX_DIM)
+      return { success: false, error: `Width must be between ${MIN_DIM} and ${MAX_DIM}` };
+
+    if (!Number.isInteger(data.height) || data.height < MIN_DIM || data.height > MAX_DIM)
+      return { success: false, error: `Height must be between ${MIN_DIM} and ${MAX_DIM}` };
+
     if (
         data.num_inference_steps !== undefined &&
         (!Number.isInteger(data.num_inference_steps) || data.num_inference_steps <= 0)
     ) {
       return { success: false, error: "num_inference_steps must be a positive integer" };
     }
+
     if (
         data.guidance_scale !== undefined &&
         (!Number.isFinite(data.guidance_scale) || data.guidance_scale < 0)
     ) {
       return { success: false, error: "guidance_scale must be a non-negative number" };
     }
-
-    const MAX_DIM = 2048;
-    const MIN_DIM = 256;
-
-    if (data.width < MIN_DIM || data.width > MAX_DIM)
-      return { success: false, error: `Width must be between ${MIN_DIM} and ${MAX_DIM}` };
-    if (data.height < MIN_DIM || data.height > MAX_DIM)
-      return { success: false, error: `Height must be between ${MIN_DIM} and ${MAX_DIM}` };
 
     const creditsNeeded = 1;
 
@@ -143,7 +144,6 @@ export async function generateImage(
     return {
       success: true,
       s3_key: result.image_s3_key,
-      // viewUrl: viewUrl,
       seed: result.seed,
       modelId: result.model_id,
       projectId: imageProject.id,
@@ -155,26 +155,16 @@ export async function generateImage(
 }
 
 
-const PAGE_SIZE = 20;
-
-export const getUserImageProjects = cache(async (page = 1) => {
+export const getUserImageProjects = cache(async () => {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
-    const skip = (page - 1) * PAGE_SIZE;
-
-    const [imageProjects, total] = await db.$transaction([
-        db.imageProject.findMany({
+    const imageProjects = await db.imageProject.findMany({
           where: { userId: session.user.id },
           orderBy: { createdAt: "desc" },
-          skip: skip,
           take: PAGE_SIZE,
-        }),
-        db.imageProject.count({
-          where: { userId: session.user.id },
-        }),
-    ]);
+        });
 
     // Prisma BigInt values aren't JSON-serializable; convert seed to number.
     const safeProjects = imageProjects.map((project) => ({
@@ -185,20 +175,57 @@ export const getUserImageProjects = cache(async (page = 1) => {
     return {
       success: true,
       imageProjects: safeProjects,
-      pagination: {
-        total,
-        page,
-        pageSize: PAGE_SIZE,
-        totalPages: Math.ceil(total / PAGE_SIZE),
-        hasNext: page * PAGE_SIZE < total,
-        hasPrev: page > 1,
-      },
     };
   } catch (e) {
     console.error("Error fetching image projects", e);
     return { success: false, error: "Failed to fetch image projects" }
   }
 });
+
+
+export async function getUserImageProjectsPaginated(cursor?: string) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+    const [imageProjects, total] = await db.$transaction([
+      db.imageProject.findMany({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: "desc" },
+        take: PAGE_SIZE + 1,            // take another 1 to see if there is still the next page
+        ...(cursor ? {
+          cursor: { id: cursor },
+          skip: 1,                      // ignore the cursor record itself
+        } : {}),
+      }),
+      db.imageProject.count({
+        where: { userId: session.user.id },
+      }),
+    ]);
+
+    const hasNext = imageProjects.length > PAGE_SIZE;
+    const items = hasNext ? imageProjects.slice(0, PAGE_SIZE) : imageProjects;
+    const nextCursor = hasNext ? items[items.length - 1]?.id : undefined;
+
+    const safeProjects = items.map((p) => ({
+      ...p,
+      seed: Number(p.seed),
+    }));
+
+    return {
+      success: true,
+      imageProjects: safeProjects,
+      pagination: {
+        total,
+        nextCursor,
+        hasNext,
+      },
+    };
+  } catch (e) {
+    console.error("Error fetching image projects", e);
+    return { success: false, error: "Failed to fetch image projects" };
+  }
+}
 
 
 export async function getUserImageStats() {
@@ -217,7 +244,10 @@ export async function getUserImageStats() {
 
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [thisWeek, thisMonth] = await db.$transaction([
+    const [total, thisWeek, thisMonth] = await db.$transaction([
+        db.imageProject.count({
+          where: { userId: session.user.id },
+        }),
         db.imageProject.count({
           where: {
             userId: session.user.id,
@@ -232,7 +262,7 @@ export async function getUserImageStats() {
         }),
     ]);
 
-    return { success: true, thisWeek, thisMonth}
+    return { success: true, total, thisWeek, thisMonth}
   } catch (e) {
     console.error("Error fetching image stats:", e);
     return { success: false, error: "Failed to fetch stats" }
