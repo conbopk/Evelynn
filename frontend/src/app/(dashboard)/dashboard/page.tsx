@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
         // Calculate stats
         const images = (imageResult.imageProjects as ImageProject[]) ?? [];
-        const total = imageResult.pagination?.total ?? images.length;
+        const total = statsResult?.total ?? images.length;
 
         if (!statsResult.success || statsResult.thisMonth === undefined || statsResult.thisWeek === undefined) {
           setUserStats({

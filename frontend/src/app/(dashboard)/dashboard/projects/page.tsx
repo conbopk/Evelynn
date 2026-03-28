@@ -12,7 +12,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigg
 import {toast} from "sonner";
 import {authClient} from "~/lib/auth-client";
 import {getDownloadUrl} from "~/actions/download-image";
-import {deleteImageProject, getUserImageProjects} from "~/actions/text-to-image";
+import {deleteImageProject, getUserImageProjectsPaginated, type ImageProjectsCursor} from "~/actions/text-to-image";
 import { ExpandableText } from "~/components/expandable-text";
 import { Pagination } from "~/components/pagination";
 import { ImageLightbox } from "~/components/image-lightbox";
@@ -43,39 +43,49 @@ export default function ProjectsPage() {
   const [lightboxImage, setLightboxImage] = useState<ImageProject | null>(null);
   const [imageProjects, setImageProjects] = useState<ImageProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<ImageProject[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("newest");
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    total: 0, totalPages: 1, hasNext: false, hasPrev: false,
-  });
+  
+  // Cursor-based pagination state
+  const [cursorStack, setCursorStack] = useState<(ImageProjectsCursor | undefined)[]>([undefined]);
+  const [stackIndex, setStackIndex] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [nextCursor, setNextCursor] = useState<ImageProjectsCursor | undefined>(undefined);
 
+  const currentCursor = cursorStack[stackIndex];
+  const hasPrev = stackIndex > 0;
+
+  // Load page whenever currentCursor changes
   useEffect(() => {
-    const initializeProjects = async () => {
+    let cancelled = false;
+    const loadPage = async () => {
+      setIsLoading(true);
       try {
-        // Fetch session and projects in parallel
-        const [, projectsResult] = await Promise.all([
+        const [, result] = await Promise.all([
             authClient.getSession(),
-            getUserImageProjects(page),
+            getUserImageProjectsPaginated(currentCursor),
         ]);
 
-        // Set image projects
-        if (projectsResult.success && projectsResult.imageProjects) {
-          setImageProjects(projectsResult.imageProjects as ImageProject[]);
-          setFilteredProjects(projectsResult.imageProjects as ImageProject[]);
-          if (projectsResult.pagination) {
-            setPagination(projectsResult.pagination);
-          }
+        if (!cancelled && result.success && result.imageProjects) {
+          setImageProjects(result.imageProjects as ImageProject[]);
+          setFilteredProjects(result.imageProjects as ImageProject[]);
+          setHasNext(result.pagination?.hasNext ?? false);
+          setTotalCount(result.pagination?.total ?? 0);
+          setNextCursor(result.pagination?.nextCursor);
         }
       } catch (e) {
-        console.error("Image projects initialization failed:", e);
+        console.error("Image projects initialization failed:", e)
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
 
-    void initializeProjects();
-  }, [page]);
+    void loadPage();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentCursor]);
 
   // Filter and sort projects
   useEffect(() => {
@@ -103,26 +113,26 @@ export default function ProjectsPage() {
     setFilteredProjects(filtered);
   }, [imageProjects, searchQuery, sortBy]);
 
-
-  // Reload when page change
-  useEffect(() => {
-    const loadPage = async () => {
+  const handleNext = () => {
+    if (nextCursor && !isLoading) {
       setIsLoading(true);
-      try {
-        const result = await getUserImageProjects(page);
-        if (result.success && result.imageProjects) {
-          setImageProjects(result.imageProjects as ImageProject[]);
-          if (result.pagination) setPagination(result.pagination);
-        }
-      } catch (e) {
-        console.error("Image projects initialization failed:", e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const newStack = [
+          ...cursorStack.slice(0, stackIndex + 1),
+          nextCursor,
+      ];
+      setCursorStack(newStack);
+      setStackIndex(stackIndex + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-    void loadPage();
-  }, [page]);
+  const handlePrev = () => {
+    if (stackIndex > 0 && !isLoading) {
+      setIsLoading(true);
+      setStackIndex(stackIndex - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const handleDownload = async (img: ImageProject, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -152,6 +162,29 @@ export default function ProjectsPage() {
     const result = await deleteImageProject(projectId);
     if (result.success) {
       setImageProjects((prev) => prev.filter((p) => p.id !== projectId));
+      setFilteredProjects((prev) => prev.filter((p) => p.id !== projectId));
+
+      // Re-sync pagination
+      const refreshResult = await getUserImageProjectsPaginated(currentCursor);
+
+      if (refreshResult.success && refreshResult.imageProjects) {
+        setImageProjects(refreshResult.imageProjects as ImageProject[]);
+
+        // Update metadata
+        setTotalCount(refreshResult.pagination?.total ?? 0);
+        setHasNext(refreshResult.pagination?.hasNext ?? false);
+        setNextCursor(refreshResult.pagination?.nextCursor);
+
+        // If the current page is empty and there is a prev page
+        if (refreshResult.imageProjects.length === 0 && hasPrev) {
+          setStackIndex(stackIndex - 1);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      toast.success("Image deleted successfully");
+    } else {
+      toast.error(result.error ?? "Failed to delete image");
     }
   };
 
@@ -186,8 +219,8 @@ export default function ProjectsPage() {
                 </h1>
                 <p className='text-muted-foreground text-base'>
                   Manage and organize all your text-to-image generations (
-                  {filteredProjects.length}{" "}
-                  {filteredProjects.length === 1 ? "image" : "images"})
+                  {searchQuery ? `${filteredProjects.length} of ${totalCount}` : totalCount}{" "}
+                  {totalCount === 1 ? "image" : "images"})
                 </p>
               </div>
               <Button
@@ -341,16 +374,12 @@ export default function ProjectsPage() {
                 </div>
             )}
 
-            {/*Load More Button - implement pagination*/}
+            {/*Cursor-based Pagination*/}
             <Pagination
-              page={page}
-              totalPages={pagination.totalPages}
-              hasNext={pagination.hasNext}
-              hasPrev={pagination.hasPrev}
-              onPageChange={(p) => {
-                setPage(p);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+              onNext={handleNext}
+              onPrev={handlePrev}
             />
           </div>
         </SignedIn>
