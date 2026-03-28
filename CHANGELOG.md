@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/conbopk/Evelynn/compare/v1.2.0...v1.3.0) (2026-03-28)
+
+
+### Features
+
+* cursor-based pagination implementation ([c99728d](https://github.com/conbopk/Evelynn/commit/c99728df94fde96e388378d6f003b951d86c57b3))
+
 # [1.2.0](https://github.com/conbopk/Evelynn/compare/v1.1.0...v1.2.0) (2026-03-23)
 
 
