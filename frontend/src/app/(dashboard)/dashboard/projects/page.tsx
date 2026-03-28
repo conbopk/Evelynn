@@ -168,6 +168,8 @@ export default function ProjectsPage() {
       const refreshResult = await getUserImageProjectsPaginated(currentCursor);
 
       if (refreshResult.success && refreshResult.imageProjects) {
+        setImageProjects(refreshResult.imageProjects as ImageProject[]);
+
         // Update metadata
         setTotalCount(refreshResult.pagination?.total ?? 0);
         setHasNext(refreshResult.pagination?.hasNext ?? false);
