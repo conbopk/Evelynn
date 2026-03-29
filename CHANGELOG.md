@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/conbopk/Evelynn/compare/v1.4.1...v1.5.0) (2026-03-29)
+
+
+### Features
+
+* add authentication method ([719cf24](https://github.com/conbopk/Evelynn/commit/719cf248ca9e9d9655b37c3ac4c776bb1ed6fdb6))
+
 ## [1.4.1](https://github.com/conbopk/Evelynn/compare/v1.4.0...v1.4.1) (2026-03-29)
 
 
