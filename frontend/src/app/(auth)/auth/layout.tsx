@@ -189,7 +189,7 @@ export default function AuthLayout({children}: { children: ReactNode }) {
               <div>{children}</div>
 
               {/*Footer Link*/}
-              <p className='mt-6 text-center text-sm'  style={{ color: "rgba(153, 102, 204, 0.75)" }}>
+              <p className='mt-0.5 text-center text-sm'  style={{ color: "rgba(153, 102, 204, 0.75)" }}>
                 Back to{" "}
                 <Link
                   href="/"

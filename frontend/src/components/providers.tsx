@@ -48,6 +48,10 @@ export function Providers({children}: { children: ReactNode }) {
                 console.log("Session check failed:", e);
               }
             }}
+            social={{
+              providers: ["github", "google"]
+            }}
+            credentials={false}
             Link={Link}
         >
           {children}
