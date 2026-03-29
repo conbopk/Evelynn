@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/conbopk/Evelynn/compare/v1.3.0...v1.4.0) (2026-03-29)
+
+
+### Features
+
+* update UI theming app ([707c81a](https://github.com/conbopk/Evelynn/commit/707c81a8a79b6d12134b5d1b750a909aac78055b))
+
 # [1.3.0](https://github.com/conbopk/Evelynn/compare/v1.2.0...v1.3.0) (2026-03-28)
 
 
