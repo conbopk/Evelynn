@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/conbopk/Evelynn/compare/v1.4.0...v1.4.1) (2026-03-29)
+
+
+### Bug Fixes
+
+* add ThemeProvider to provider.tsx ([e5c45e9](https://github.com/conbopk/Evelynn/commit/e5c45e92670c2317cdb1e5d22f4f0b6efd339212))
+
 # [1.4.0](https://github.com/conbopk/Evelynn/compare/v1.3.0...v1.4.0) (2026-03-29)
 
 
