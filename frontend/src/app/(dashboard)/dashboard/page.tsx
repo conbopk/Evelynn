@@ -105,183 +105,142 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-        <div className='flex min-h-[400px] items-center justify-center mt-24'>
+        <div className='mt-24 flex min-h-[400px] items-center justify-center'>
           <div className='flex flex-col items-center gap-4'>
-            <Loader2 className='text-primary h-8 w-8 animate-spin'/>
-            <p className='text-muted-foreground text-sm'>
-              Loading your dashboard...
-            </p>
+            <Loader2 className='h-8 w-8 animate-spin text-primary'/>
+            <p className='text-sm text-muted-foreground'>Loading your dashboard...</p>
           </div>
         </div>
     );
   }
 
+  const statCards = [
+    {
+      title: "Total Images",
+      icon: <ImageIcon className='h-4 w-4 text-primary'/>,
+      value: userStats.totalImageProjects,
+      label: "Image generations",
+      valueClass: "text-primary",
+    },
+    {
+      title: "This Month",
+      icon: <Calendar className='h-4 w-4 text-accent'/>,
+      value: userStats.thisMonth,
+      label: "Projects created",
+      valueClass: "text-accent",
+    },
+    {
+      title: "This Week",
+      icon: <TrendingUp className='h-4 w-4 text-primary'/>,
+      value: userStats.thisWeek,
+      label: "Image generations",
+      valueClass: "text-primary",
+    },
+    {
+      title: "Member Since",
+      icon: <Star className='h-4 w-4 text-accent'/>,
+      value: user?.createdAt
+          ? new Date(user.createdAt as string | number | Date).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+          : "N/A",
+      label: "Account created",
+      valueClass: "text-accent",
+    },
+  ];
+
   return (
       <>
-        {/*Lightbox*/}
-        <ImageLightbox
-          image={lightboxImage}
-          onClose={() => setLightboxImage(null)}
-        />
+        <ImageLightbox image={lightboxImage} onClose={() => setLightboxImage(null)}/>
 
         <RedirectToSignIn />
         <SignedIn>
           <div className='space-y-6'>
-            {/*Header Section*/}
+            {/* Header */}
             <div className='space-y-2'>
-              <h1 className='from-primary to-primary/70 bg-gradient-to-r bg-clip-text text-2xl font-bold tracking-tight text-transparent sm:text-3xl'>
+              <h1 className='bg-gradient-to-r from-primary to-accent bg-clip-text text-2xl font-bold tracking-tight text-transparent sm:text-3xl'>
                 Welcome back{user?.name ? `, ${user.name}` : ""}!
               </h1>
-              <p className='text-muted-foreground text-base sm:text-lg'>
+              <p className='text-base text-muted-foreground sm:text-lg'>
                 Here&apos;s an overview of your Text-to-Image workspace
               </p>
             </div>
 
-            {/*Stats Cards*/}
+            {/* Stats Cards */}
             <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-              <Card className='relative overflow-hidden'>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    Total Images
-                  </CardTitle>
-                  <ImageIcon className='h-4 w-4 text-purple-500'/>
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold text-purple-600'>
-                    {userStats.totalImageProjects}
-                  </div>
-                  <p className='text-muted-foreground text-xs'>
-                    Image generations
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className='relative overflow-hidden'>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    This Month
-                  </CardTitle>
-                  <Calendar className='h-4 w-4 text-blue-500'/>
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold text-blue-600'>
-                    {userStats.thisMonth}
-                  </div>
-                  <p className='text-muted-foreground text-xs'>
-                    Projects created
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className='relative overflow-hidden'>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    This Week
-                  </CardTitle>
-                  <TrendingUp className='h-4 w-4 text-green-500'/>
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold text-green-600'>
-                    {userStats.thisWeek}
-                  </div>
-                  <p className='text-muted-foreground text-xs'>
-                    Image generations
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className='relative overflow-hidden'>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    Member Since
-                  </CardTitle>
-                  <Star className='h-4 w-4 text-yellow-500'/>
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold text-yellow-600'>
-                    {user?.createdAt
-                      ? new Date(
-                          user.createdAt as string | number | Date,
-                        ).toLocaleDateString("en-US", {
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "N/A"}
-                  </div>
-                  <p className='text-muted-foreground text-xs'>
-                    Account created
-                  </p>
-                </CardContent>
-              </Card>
+              {statCards.map((s) => (
+                  <Card key={s.title} className='relative overflow-hidden'>
+                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                      <CardTitle className='text-sm font-medium'>{s.title}</CardTitle>
+                      {s.icon}
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl font-bold ${s.valueClass}`}>{s.value}</div>
+                      <p className='text-xs text-muted-foreground'>{s.label}</p>
+                    </CardContent>
+                  </Card>
+              ))}
             </div>
 
-            {/*Quick Actions*/}
+            {/* Quick Actions */}
             <Card>
               <CardHeader>
                 <CardTitle className='flex items-center gap-2'>
-                  <Sparkles className='text-primary h-5 w-5'/>
+                  <Sparkles className='h-5 w-5 text-primary'/>
                   Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
                   <Button
-                    onClick={() => router.push("/dashboard/create")}
-                    className='group h-auto flex-col gap-2 bg-gradient-to-br from-purple-500 to-blue-500 p-6 hover:bg-gradient-br hover:from-purple-600 hover:to-blue-600'
+                      onClick={() => router.push("/dashboard/create")}
+                      className='group h-auto flex-col gap-2 bg-gradient-to-br from-primary to-accent p-6 hover:from-primary/90 hover:to-accent/90'
                   >
                     <ImageIcon className='h-8 w-8 transition-transform group-hover:scale-110'/>
                     <div className='text-center'>
                       <div className='font-semibold'>Text-to-Image</div>
-                      <div className='text-xs opacity-80'>
-                        Generate images from a prompt
-                      </div>
+                      <div className='text-xs opacity-80'>Generate images from a prompt</div>
                     </div>
                   </Button>
 
                   <Button
                       onClick={() => router.push("/dashboard/projects")}
                       variant="outline"
-                      className='group hover:bg-muted h-auto flex-col gap-2 p-6'
+                      className='group h-auto flex-col gap-2 p-6 hover:bg-primary/10 hover:border-primary/50'
                   >
                     <FolderOpen className='h-8 w-8 transition-transform group-hover:scale-110'/>
                     <div className='text-center'>
                       <div className='font-semibold'>View All Images</div>
-                      <div className='text-xs opacity-70'>
-                        Browse your image library
-                      </div>
+                      <div className='text-xs opacity-70'>Browse your image library</div>
                     </div>
                   </Button>
 
                   <Button
                       onClick={() => router.push("/dashboard/settings")}
                       variant="outline"
-                      className='group hover:bg-muted h-auto flex-col gap-2 p-6'
+                      className='group h-auto flex-col gap-2 p-6 hover:bg-primary/10 hover:border-primary/50'
                   >
                     <Settings className='h-8 w-8 transition-transform group-hover:scale-110'/>
                     <div className='text-center'>
                       <div className='font-semibold'>Account Settings</div>
-                      <div className='text-xs opacity-70'>
-                        Manage your profile
-                      </div>
+                      <div className='text-xs opacity-70'>Manage your profile</div>
                     </div>
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/*Recent Image Projects*/}
+            {/* Recent Image Projects */}
             <Card>
               <CardHeader className='flex flex-row items-center justify-between'>
                 <CardTitle className='flex items-center gap-2'>
-                  <ImageIcon className='h-5 w-5 text-purple-600'/>
+                  <ImageIcon className='h-5 w-5 text-primary'/>
                   Recent Image Projects
                 </CardTitle>
                 {imageProjects.length > 0 && (
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push("/dashboard/projects")}
-                      className='text-purple-600 hover:text-purple-700'
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push("/dashboard/projects")}
+                        className='text-primary hover:text-primary hover:bg-primary/10'
                     >
                       View All <ArrowRight className='ml-1 h-4 w-4'/>
                     </Button>
@@ -291,19 +250,17 @@ export default function DashboardPage() {
                 {imageProjects.length === 0 ? (
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
                       <div className='relative mb-4'>
-                        <div className='border-muted bg-muted/20 flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed'>
-                          <ImageIcon className='text-muted-foreground h-8 w-8'/>
+                        <div className='flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-border bg-muted/20'>
+                          <ImageIcon className='h-8 w-8 text-muted-foreground'/>
                         </div>
                       </div>
-                      <h3 className='mb-2 text-lg font-semibold'>
-                        No image projects yet
-                      </h3>
-                      <p className='text-muted-foreground mb-4 text-sm'>
+                      <h3 className='mb-2 text-lg font-semibold'>No image projects yet</h3>
+                      <p className='mb-4 text-sm text-muted-foreground'>
                         Start generating images from text prompts
                       </p>
                       <Button
-                        onClick={() => router.push("/dashboard/create")}
-                        className='gap-2 bg-purple-600 hover:bg-purple-700'
+                          onClick={() => router.push("/dashboard/create")}
+                          className='gap-2 bg-primary hover:bg-primary/90'
                       >
                         <ImageIcon className='h-4 w-4'/>
                         Create Your First Image
@@ -313,16 +270,16 @@ export default function DashboardPage() {
                     <div className='space-y-3'>
                       {imageProjects.slice(0, 5).map((project) => (
                           <div
-                            key={project.id}
-                            className='group hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-4 transition-all hover:shadow-sm'
+                              key={project.id}
+                              className='group flex items-center gap-4 rounded-lg border border-border p-4 transition-all hover:bg-muted/30 hover:border-primary/30'
                           >
-                            <div className='relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border bg-purple-100'>
+                            <div className='relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-primary/10'>
                               <Image
-                                src={`/api/images/${project.s3Key}`}
-                                alt={project.prompt}
-                                fill
-                                unoptimized
-                                className='object-contain'
+                                  src={`/api/images/${project.s3Key}`}
+                                  alt={project.prompt}
+                                  fill
+                                  unoptimized
+                                  className='object-contain'
                               />
                             </div>
                             <div className='min-w-0 flex-1'>
@@ -330,28 +287,20 @@ export default function DashboardPage() {
                                 {project.name ?? project.prompt.substring(0, 60) + (project.prompt.length > 60 ? "..." : "")}
                               </h4>
                               <div className='mt-1 flex items-center gap-2'>
-                                <p className='text-muted-foreground text-xs'>
-                                  {project.width}x{project.height}
-                                </p>
-                                <span className='text-muted-foreground text-xs'>
-                                  •
-                                </span>
-                                <p className='text-muted-foreground text-xs'>
-                                  {new Date(project.createdAt).toLocaleDateString()}
-                                </p>
+                                <p className='text-xs text-muted-foreground'>{project.width}x{project.height}</p>
+                                <span className='text-xs text-muted-foreground'>•</span>
+                                <p className='text-xs text-muted-foreground'>{new Date(project.createdAt).toLocaleDateString()}</p>
                               </div>
                             </div>
-                            <div className='shrink-0'>
-                              <Button
+                            <Button
                                 variant='outline'
                                 size='sm'
-                                className='gap-1.5'
+                                className='shrink-0 gap-1.5 hover:border-primary/50 hover:bg-primary/10'
                                 onClick={() => setLightboxImage(project)}
-                              >
-                                <Expand className='h-3.5 w-3.5'/>
-                                Open
-                              </Button>
-                            </div>
+                            >
+                              <Expand className='h-3.5 w-3.5'/>
+                              Open
+                            </Button>
                           </div>
                       ))}
                     </div>

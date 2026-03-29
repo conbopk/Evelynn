@@ -154,7 +154,7 @@ export default function CreatePage() {
   if (isLoading) {
     return (
         <div className='flex min-h-[400px] items-center justify-center mt-24'>
-          <Loader2 className='h-8 w-8 animate-spin'/>
+          <Loader2 className='h-8 w-8 animate-spin text-primary'/>
         </div>
     );
   }
@@ -164,22 +164,22 @@ export default function CreatePage() {
         <RedirectToSignIn />
         <SignedIn>
           <div className='min-h-screen'>
-            {/*Top Navbar*/}
-            <div className='border-b border-b-gray-200 bg-white py-2'>
+            {/* Top bar */}
+            <div className='border-b border-border bg-card/60 py-2 backdrop-blur'>
               <div className='mx-auto max-w-7xl text-center'>
-                <h1 className='from-primary to-primary/70 mb-1 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent'>
+                <h1 className='mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-lg font-bold text-transparent'>
                   Text-to-Image Generator
                 </h1>
-                <p className='text-muted-foreground mx-auto max-w-xl text-xs'>
+                <p className='mx-auto max-w-xl text-xs text-muted-foreground'>
                   Generate images from text prompts
                 </p>
               </div>
             </div>
 
-            {/*Main Content Area*/}
+            {/* Main Content */}
             <div className='mx-auto max-w-7xl px-2 py-4 sm:px-4 sm:py-6'>
               <div className='grid grid-cols-1 gap-2 sm:gap-4 lg:grid-cols-3'>
-                {/*Left Side - Controls (1/3 width)*/}
+                {/* Left – Controls */}
                 <div className='order-2 space-y-2 sm:space-y-3 lg:order-1 lg:col-span-1'>
                   <ImageSettings
                       prompt={prompt}
@@ -198,24 +198,24 @@ export default function CreatePage() {
                   />
                 </div>
 
-                {/*Right Side - Text Input & Preview (2/3 width)*/}
+                {/* Right – Prompt & Preview */}
                 <div className='order-1 space-y-2 sm:space-y-3 lg:order-2 lg:col-span-2'>
                   <PromptInput
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    negativePrompt={negativePrompt}
-                    setNegativePrompt={setNegativePrompt}
-                    currentImage={currentImage}
-                    onDownload={downloadImage}
+                      prompt={prompt}
+                      setPrompt={setPrompt}
+                      negativePrompt={negativePrompt}
+                      setNegativePrompt={setNegativePrompt}
+                      currentImage={currentImage}
+                      onDownload={downloadImage}
                   />
                 </div>
               </div>
             </div>
 
-            {/*History Section*/}
+            {/* History */}
             <ImageHistory
-              generatedImages={generatedImages}
-              onDownload={downloadImage}
+                generatedImages={generatedImages}
+                onDownload={downloadImage}
             />
           </div>
         </SignedIn>
